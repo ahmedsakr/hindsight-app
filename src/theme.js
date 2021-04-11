@@ -9,7 +9,8 @@ const Theme = createMuiTheme({
       main: 'rgb(19,211,142, 0.7)'
     },
     secondary: {
-      main: '#fff'
+      main: '#fff',
+      dark: '#2A2A2A'
     }
   },
 });

@@ -52,7 +52,7 @@ const styles = makeStyles(theme => ({
       color: theme.palette.secondary.main,
       fontSize: 12,
       padding: theme.spacing(1.25),
-      border: `solid 2px ${theme.palette.primary.main}`,
+      border: `solid 2px ${theme.palette.secondary.dark}`,
       borderRadius: 6,
     },
     '& .MuiInputLabel-root': {
@@ -66,11 +66,16 @@ const styles = makeStyles(theme => ({
     borderRadius: 10,
     color: theme.palette.secondary.main,
     fontWeight: 700,
+  },
+  loginDisabled: {
+    backgroundColor: `${theme.palette.secondary.dark} !important`,
+    color: `${theme.palette.secondary.main} !important`
   }
 }));
 
 const Header = (props) => {
   const classes = styles(props);
+  const theme = useTheme();
 
   return (
     <Grid container className={classes.header}>
@@ -87,6 +92,7 @@ const Header = (props) => {
         color="secondary"
         variant="h6"
         className={classes.headerText}
+        style={{ marginTop: theme.spacing(1) }}
       >
         Insight into your trading behaviours
       </Typography>
@@ -131,19 +137,26 @@ const Form = (props) => {
           placeholder="jane@doe.ca"
           color="primary"
           className={classes.formTextfield}
-          />
+          value={props.credentials.email.value}
+          onChange={props.credentials.email.update}
+        />
         <TextField
           variant="outlined"
           type="password"
           placeholder="password"
           color="primary"
           className={classes.formTextfield}
-          />
-        
+          value={props.credentials.password.value}
+          onChange={props.credentials.password.update}
+        />
         <Button
           variant="contained"
           color="primary"
           className={classes.loginButton}
+          disabled={props.credentials.password.value === '' || props.credentials.email.value === ''}
+          classes={{
+            disabled: classes.loginDisabled
+          }}
         >
           Login ➔
         </Button>
@@ -154,12 +167,25 @@ const Form = (props) => {
 
 const Login = (props) => {
   const classes = styles(props);
+  const [ email, setEmail ] = React.useState('');
+  const [ password, setPassword ] = React.useState('');
 
   return (
     <>
       <Header />
       <Divider className={classes.divider}/>
-      <Form />
+      <Form
+        credentials={{
+          email: {
+            value: email,
+            update: (event) => setEmail(event.target.value),
+          },
+          password: {
+            value: password,
+            update: (event) => setPassword(event.target.value),
+          }
+        }}
+      />
     </> 
   )
 };
