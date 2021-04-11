@@ -1,2 +1,3 @@
-# trading-reflections
-Election.js app for Reflections on trading behaviour on Wealthsimple Trade
+## TradingReflections
+
+ELectron.js + React app for viewing more trading insights with your Wealthsimple Trade account
