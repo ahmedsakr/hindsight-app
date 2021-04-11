@@ -1,12 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core';
-import SVGLogo from '../assets/tradingreflections-logo.svg';
+import SVGLogo from '../assets/tradingreflections-logo-png.png';
 
 
 const styles = makeStyles(theme => ({
   logo: props => ({
-    width: '60%',
-    height: 'auto'
+    width: props.full ? '80%': 128,
+    height: props.full ? '26%': 56
   })
 }));
 
