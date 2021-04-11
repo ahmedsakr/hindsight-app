@@ -8,14 +8,14 @@ import theme from './theme';
 const styles = makeStyles(theme => ({
   root: {
     width: "100%",
-    height: "100vh",
+    minHeight: "100vh",
     backgroundColor: theme.palette.background.main,
     justifyContent: "center",
     alignItems: "center"
   },
   content: props => {
     const css = {
-      margin: "10% 0px",
+      margin: "5% 0px",
     };
 
     // No size limitations on content if we're on electron app.
@@ -28,9 +28,11 @@ const styles = makeStyles(theme => ({
 
     return {
       ...css,
+      minWidth: "550px",
       maxWidth: "40%",
-      minHeight: "60%",
-      maxHeight: "80%"
+      maxHeight: "80%",
+      padding: theme.spacing(3),
+      border: 'dotted 2px gray'
     };
   }
 }));
@@ -41,7 +43,7 @@ const AppContainer = (props) => {
 
   return (
     <Grid container className={classes.root}>
-      <Grid container className={classes.content}>
+      <Grid className={classes.content}>
         {props.children}
       </Grid>
     </Grid>
@@ -51,7 +53,7 @@ const AppContainer = (props) => {
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <AppContainer electron={process.env.REACT_APP_DESKTOP_APP === 'true'}>
+      <AppContainer electron={true}>
         <Login />
       </AppContainer>
     </ThemeProvider>
