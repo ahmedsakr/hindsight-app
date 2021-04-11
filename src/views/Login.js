@@ -81,14 +81,6 @@ const Header = (props) => {
     <Grid container className={classes.header}>
       <Logo full />
       <Typography
-        color="primary"
-        variant="h2"
-        className={classes.headerText}
-        style={{ fontWeight: 700 }}
-      >
-        TradingReflections
-      </Typography>
-      <Typography
         color="secondary"
         variant="h6"
         className={classes.headerText}
