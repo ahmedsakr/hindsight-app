@@ -9,26 +9,29 @@ import {
 import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
 import { Redirect } from 'react-router';
+import { useScreenSize } from '../helpers/screen';
 
 const styles = makeStyles(theme => ({
-  root: {
+  root: props => ({
     width: "100%",
-    height: "100%"
-  },
-  content: {
+    height: "100%",
+    justifyContent: props.screen === 'small' ? 'center' : 'flex-start',
+  }),
+  content: props => ({
     flexDirection: 'column',
-    alignItems: "center"
-  },
+    alignItems: "center",
+    marginTop: props.screen === 'small' ? theme.spacing(4) : 0,
+  }),
   contentBody: {
     width: "60%",
     textAlign: "center",
     marginTop: theme.spacing(2),
   },
-  otp: {
+  otp: props => ({
     flexWrap: "nowrap",
-    width: "50%",
+    width: props.screen === 'small' ? "100%" : "50%",
     marginTop: theme.spacing(6)
-  },
+  }),
   otpField: props => {
     let border = theme.palette.secondary.dark;
     if (props.login === 'invalid') {
@@ -53,7 +56,8 @@ const styles = makeStyles(theme => ({
 }));
 
 const CursorFocusableOtpField = (props) => {
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
   const ref = React.useRef();
 
   React.useEffect(() => {
@@ -71,7 +75,7 @@ const CursorFocusableOtpField = (props) => {
       onChange={(event) => props.otp.update(props.idx, event.target.value)}
       disabled={props.login === 'in-progress'}
       onMouseDown={() => {
-        if (props.otpFocus.state.enabled) {
+        if (props.otpFocus.state.enabled && props.otpFocus.state.index !== props.idx) {
           props.otpFocus.disable();
         }
       }}
@@ -80,24 +84,35 @@ const CursorFocusableOtpField = (props) => {
 };
 
 const Form = (props) => {
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
   return (
     <Grid container className={classes.otp}>
       {
-        [...Array(props.otp.current.length).keys()].map((idx) => <CursorFocusableOtpField idx={idx} {...props} />)
+        [...Array(props.otp.current.length).keys()].map((idx) => {
+          return (
+            <CursorFocusableOtpField
+              idx={idx}
+              key={idx}
+              {...props}
+            />
+          );
+        })
       }
     </Grid>
   );
 }
 
 const Content = (props) => {
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
 
   return (
     <Grid container className={classes.content}>
       <Typography
         variant="h4"
         color="secondary"
+        style={{ textAlign: "center" }}
       >
         One-Time Password (OTP)
       </Typography>
@@ -124,7 +139,8 @@ const Content = (props) => {
 
 
 const OTP = (props) => {
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
   const [ otp, setOtp ] = React.useState(['', '', '', '', '', '']);
   const [ otpFocus, setOtpFocus ] = React.useState({ enabled: true, index: 0 });
   const [ login, setLogin ] = React.useState('waiting');

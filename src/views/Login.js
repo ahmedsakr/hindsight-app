@@ -13,6 +13,7 @@ import WSIcon from '../assets/ws_logo_green.png';
 import WSLogoText from '../assets/ws_text_logo.png';
 import { Redirect } from 'react-router';
 import sendLogin from '../services/login';
+import { useScreenSize } from '../helpers/screen';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -45,15 +46,16 @@ const styles = makeStyles(theme => ({
     backgroundColor: '#3D3939',
     margin: "5% 0px",
   },
-  form: {
+  form: props => ({
     marginTop: theme.spacing(2),
-    justifyContent: "center"
-  },
-  formTextfield: {
-    margin: `0px ${theme.spacing(1)}px`,
+    justifyContent: "center",
+    flexDirection: props.screen === 'small' ? 'column' : 'row',
+  }),
+  formTextfield: props => ({
+    margin: props.screen === 'small' ? `${theme.spacing(1)}px 0px` : `0px ${theme.spacing(1)}px`,
     '& input': {
       color: theme.palette.secondary.main,
-      fontSize: 12,
+      fontSize: props.screen === 'small' ? 16 : 12,
       padding: theme.spacing(1.25),
       border: `solid 2px ${theme.palette.secondary.dark}`,
       borderRadius: 6,
@@ -64,7 +66,7 @@ const styles = makeStyles(theme => ({
     '& .Mui-focused': {
       color: theme.palette.primary.main
     }
-  },
+  }),
   loginButton: {
     borderRadius: 10,
     color: theme.palette.secondary.main,
@@ -89,7 +91,7 @@ const Header = (props) => {
         className={classes.headerText}
         style={{ marginTop: theme.spacing(1) }}
       >
-        Insight into your trading behaviours
+        Discover your trading behaviours
       </Typography>
     </Grid>
   );
@@ -119,8 +121,8 @@ const WealthsimpleConnect = (props) => {
 }
 
 const Form = (props) => {
-
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
 
   return (
     <Grid container>
@@ -129,6 +131,7 @@ const Form = (props) => {
         <TextField
           autoFocus
           variant="outlined"
+          type="email"
           placeholder="jane@doe.ca"
           color="primary"
           className={classes.formTextfield}
@@ -163,6 +166,7 @@ const Form = (props) => {
 
 const Login = (props) => {
   const classes = styles(props);
+
   const [ email, setEmail ] = React.useState('');
   const [ password, setPassword ] = React.useState('');
   const [ loggedIn, setLoggedIn ] = React.useState(false);

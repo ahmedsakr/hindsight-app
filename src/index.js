@@ -12,6 +12,7 @@ import {
   Route
 } from 'react-router-dom';
 import Insights from './views/Insights';
+import { useScreenSize } from './helpers/screen';
 
 const styles = makeStyles(theme => ({
   root: props => {
@@ -45,6 +46,15 @@ const styles = makeStyles(theme => ({
       };
     }
 
+    // we're on tablet or mobile phone
+    if (props.screen === 'small') {
+      return {
+        ...css,
+        padding: theme.spacing(4),
+      }
+    }
+
+    // we're on a big screen
     return {
       ...css,
       maxWidth: "40%",
@@ -55,8 +65,8 @@ const styles = makeStyles(theme => ({
 }));
 
 const AppContainer = (props) => {
-  
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({...props, screen });
 
   return (
     <Grid container className={classes.root}>
