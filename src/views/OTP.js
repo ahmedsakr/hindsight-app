@@ -24,7 +24,7 @@ const styles = makeStyles(theme => ({
   otp: {
     flexWrap: "nowrap",
     width: "50%",
-    marginTop: theme.spacing(4)
+    marginTop: theme.spacing(6)
   },
   otpField: {
     flexShrink: 1,
