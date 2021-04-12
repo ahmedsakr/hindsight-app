@@ -47,8 +47,6 @@ const styles = makeStyles(theme => ({
 
     return {
       ...css,
-      minWidth: "550px",
-      minHeight: "310px",
       maxWidth: "40%",
       padding: theme.spacing(3),
       border: 'dotted 2px gray'

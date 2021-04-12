@@ -3,7 +3,8 @@ import {
   makeStyles,
   Grid,
   Typography,
-  TextField
+  TextField,
+  Button
 } from '@material-ui/core';
 import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
@@ -30,8 +31,10 @@ const styles = makeStyles(theme => ({
   },
   otpField: props => {
     let border = theme.palette.secondary.dark;
-    if (props.invalid) {
+    if (props.login === 'invalid') {
       border = 'red';
+    } else if (props.login === 'valid') {
+      border = theme.palette.primary.main
     }
 
     return {
@@ -66,7 +69,7 @@ const CursorFocusableOtpField = (props) => {
       className={classes.otpField}
       value={props.otp.current[props.idx]}
       onChange={(event) => props.otp.update(props.idx, event.target.value)}
-      disabled={props.loggingIn}
+      disabled={props.login === 'in-progress'}
       onMouseDown={() => {
         if (props.otpFocus.state.enabled) {
           props.otpFocus.disable();
@@ -107,6 +110,14 @@ const Content = (props) => {
         Wealthsimple to complete the login.
       </Typography>
       <Form {...props}/>
+      <Button
+        variant="outlined"
+        color="secondary"
+        style={{ marginTop: "5%" }}
+        onClick={props.cancel}
+      >
+        🠔 Cancel
+      </Button>
     </Grid>
   )
 }
@@ -116,16 +127,16 @@ const OTP = (props) => {
   const classes = styles(props);
   const [ otp, setOtp ] = React.useState(['', '', '', '', '', '']);
   const [ otpFocus, setOtpFocus ] = React.useState({ enabled: true, index: 0 });
-  const [ loggingIn, setLoggingIn ] = React.useState(false);
+  const [ login, setLogin ] = React.useState('waiting');
   const [ tokens, setTokens ] = React.useState({});
-  const [ invalid, setInvalid ] = React.useState(false);
+  const [ cancel, setCancel ] = React.useState(false);
 
   React.useEffect(() => {
     const otpString = otp.join('');
 
     if (otpString.length === 6) {
       const credentials = props.location.state;
-      setLoggingIn(true);
+      setLogin('in-progress');
 
       sendLogin(credentials.email, credentials.password, otpString)
       .then((result) => result.json())
@@ -135,25 +146,32 @@ const OTP = (props) => {
         }
 
         setTokens(tokens);
+        setLogin('valid');
       })
       .catch(() => {
         // Set invalid login attempt
-        setInvalid(true);
-        setLoggingIn(false);
-
-        // Turn of invalid status in 1 second
-        setTimeout(() => setInvalid(false), 1000);
+        setLogin('invalid');
+      })
+      .then(() => {
+        // Revert back to waiting state after 1 second
+        setTimeout(() => setLogin('waiting'), 1000);
       })
     }
   }, [ otp, props.location.state ]);
 
-  React.useEffect(() => {
-    if (loggingIn) {
-      setLoggingIn(false);
-    }
-  }, [ tokens, loggingIn ]);
+  // Redirect back to login page if user has cancelled.
+  if (cancel) {
+    return (
+      <Redirect to={{
+        pathname: "/",
+        state: null
+      }}
+      />
+    );
+  }
 
-  if (Object.keys(tokens).length > 0) {
+  // Redirect to insights page on successful login
+  if (login === 'waiting' && Object.keys(tokens).length > 0) {
     return (
       <Redirect to={{
         pathname: "/insights",
@@ -188,8 +206,8 @@ const OTP = (props) => {
           disable: () => setOtpFocus({ ...otpFocus, enabled: false })
         }}
 
-        loggingIn={loggingIn}
-        invalid={invalid}
+        login={login}
+        cancel={() => setCancel(true)}
       />
     </Grid>
   );
