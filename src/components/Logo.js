@@ -18,7 +18,9 @@ const styles = makeStyles(theme => ({
   },
   logoText: {
     margin: 0,
-    lineHeight: 1
+    lineHeight: 1,
+    fontWeight: 700,
+    textAlign: "center"
   }
 }));
 
@@ -32,9 +34,8 @@ const Logo = (props) => {
         color="primary"
         variant={props.full ? "h2" : "h6"}
         className={classes.logoText}
-        style={{ fontWeight: 700 }}
       >
-        TradingReflections
+        Hindsight
       </Typography>
     </>
   )
