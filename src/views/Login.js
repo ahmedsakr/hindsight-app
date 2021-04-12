@@ -109,8 +109,8 @@ const WealthsimpleConnect = (props) => {
         item
         style={{ marginLeft: theme.spacing(2) }}
       >
-        <img src={WSIcon} className={classes.wsLogoIcon} />
-        <img src={WSLogoText} className={classes.wsLogoText} />
+        <img src={WSIcon} className={classes.wsLogoIcon} alt="Wealthsimple Trade circle logo" />
+        <img src={WSLogoText} className={classes.wsLogoText} alt="Wealthsimple Trade text logo" />
       </Grid>
     </Grid>
   );

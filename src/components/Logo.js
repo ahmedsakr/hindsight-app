@@ -4,7 +4,7 @@ import {
   Typography,
   Grid
 } from '@material-ui/core';
-import SVGLogo from '../assets/tradingreflections-logo-png.png';
+import PNGLogo from '../assets/tradingreflections-logo-png.png';
 
 
 const styles = makeStyles(theme => ({
@@ -29,7 +29,7 @@ const Logo = (props) => {
 
   return (
     <>
-      <img src={SVGLogo} className={classes.logo}/>
+      <img src={PNGLogo} className={classes.logo} alt="Hindsight candlestick logo" />
       <Typography
         color="primary"
         variant={props.full ? "h2" : "h6"}

@@ -5,7 +5,7 @@ import {
   Typography,
   TextField
 } from '@material-ui/core';
-import Logo, { SideLogo } from '../components/Logo';
+import { SideLogo } from '../components/Logo';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -48,7 +48,7 @@ const CursorFocusableOtpField = (props) => {
     if (props.otpFocus.state.enabled && props.otpFocus.state.index === props.idx) {
       ref.current.focus();
     }
-  }, [ props.otpFocus ]);
+  }, [ props.otpFocus, props.idx ]);
 
   return (
     <TextField

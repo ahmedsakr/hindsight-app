@@ -1,3 +1,3 @@
-## hindsight-client
+## hindsight-app
 
-ELectron.js + React app for viewing more trading insights with your Wealthsimple Trade account
+ELectron + React app for viewing more trading insights with your Wealthsimple Trade account

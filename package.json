@@ -1,5 +1,5 @@
 {
-  "name": "trading-reflections",
+  "name": "hindsight-app",
   "version": "0.1.0",
   "private": true,
   "main": "src/electron.js",
