@@ -11,6 +11,7 @@ import {
 import Logo from '../components/Logo';
 import WSIcon from '../assets/ws_logo_green.png';
 import WSLogoText from '../assets/ws_text_logo.png';
+import { Redirect } from 'react-router';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -149,6 +150,7 @@ const Form = (props) => {
           classes={{
             disabled: classes.loginDisabled
           }}
+          onClick={props.login}
         >
           Login ➔
         </Button>
@@ -161,6 +163,15 @@ const Login = (props) => {
   const classes = styles(props);
   const [ email, setEmail ] = React.useState('');
   const [ password, setPassword ] = React.useState('');
+  const [ loggedIn, setLoggedIn ] = React.useState(false);
+
+  // trivial redirect to OTP view until the backend service
+  // is hooked up to the frontend
+  if (loggedIn) {
+    return (
+      <Redirect to="/otp" />
+    );
+  }
 
   return (
     <>
@@ -177,6 +188,8 @@ const Login = (props) => {
             update: (event) => setPassword(event.target.value),
           }
         }}
+
+        login={() => setLoggedIn(true)}
       />
     </> 
   )

@@ -3,34 +3,52 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Login from './views/Login';
+import OTP from './views/OTP';
 import theme from './theme';
 
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route
+} from 'react-router-dom';
+
 const styles = makeStyles(theme => ({
-  root: {
-    width: "100%",
-    minHeight: "100vh",
-    backgroundColor: theme.palette.background.main,
-    justifyContent: "center",
-    alignItems: "center"
+  root: props => {
+
+    const css = {
+      minHeight: "100vh",
+      flexDirection: "column",
+      backgroundColor: theme.palette.background.main,
+      alignItems: "center",
+    };
+
+    if (!props.electron) {
+      css.justifyContent = "center";
+    }
+
+    return css;
   },
   content: props => {
     const css = {
       margin: "5% 0px",
+      position: "absolute",
+      maxHeight: "80%",
     };
 
     // No size limitations on content if we're on electron app.
     if (props.electron) {
       return {
         ...css,
-        maxWidth: "80%"
+        width: "85%",
+        height: "85%"
       };
     }
 
     return {
       ...css,
       minWidth: "550px",
+      minHeight: "310px",
       maxWidth: "40%",
-      maxHeight: "80%",
       padding: theme.spacing(3),
       border: 'dotted 2px gray'
     };
@@ -54,7 +72,18 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <AppContainer electron={true}>
-        <Login />
+
+        <Router>
+          <Switch>
+            <Route path="/otp">
+              <OTP />
+            </Route>
+            <Route path="/">
+              <Login />
+            </Route>
+          </Switch>
+        </Router>
+
       </AppContainer>
     </ThemeProvider>
   </React.StrictMode>,

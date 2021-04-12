@@ -10,7 +10,10 @@ const Theme = createMuiTheme({
     },
     secondary: {
       main: '#fff',
-      dark: '#2A2A2A'
+      dark: '#2A2A2A',
+    },
+    text: {
+      secondary: '#9A9494'
     }
   },
 });
