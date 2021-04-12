@@ -11,6 +11,7 @@ import {
   Switch,
   Route
 } from 'react-router-dom';
+import Insights from './views/Insights';
 
 const styles = makeStyles(theme => ({
   root: props => {
@@ -71,16 +72,13 @@ const AppContainer = (props) => {
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <AppContainer electron={true}>
+      <AppContainer electron={process.env.REACT_APP_DESKTOP_APP === 'true'}>
 
         <Router>
           <Switch>
-            <Route path="/otp">
-              <OTP />
-            </Route>
-            <Route path="/">
-              <Login />
-            </Route>
+            <Route path="/insights" component={Insights} />
+            <Route path="/otp" component={OTP} />
+            <Route path="/" component={Login} />
           </Switch>
         </Router>
 

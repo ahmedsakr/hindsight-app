@@ -12,6 +12,7 @@ import Logo from '../components/Logo';
 import WSIcon from '../assets/ws_logo_green.png';
 import WSLogoText from '../assets/ws_text_logo.png';
 import { Redirect } from 'react-router';
+import sendLogin from '../services/login';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -21,6 +22,7 @@ const styles = makeStyles(theme => ({
   header: {
     alignItems: "center",
     flexDirection: "column",
+    marginBottom: "10%"
   },
   headerText: {
     margin: 0,
@@ -169,7 +171,14 @@ const Login = (props) => {
   // is hooked up to the frontend
   if (loggedIn) {
     return (
-      <Redirect to="/otp" />
+      <Redirect to={{
+        pathname: "/otp",
+        state: {
+          email,
+          password
+        }
+      }}
+      />
     );
   }
 
@@ -189,7 +198,13 @@ const Login = (props) => {
           }
         }}
 
-        login={() => setLoggedIn(true)}
+        login={async () => {
+          // this will always fail because OTP is not being provided; however,
+          // this must be done to trigger an OTP dispatch from Wealthsimple
+          await sendLogin(email, password).catch(() => {});
+          // move the user to the OTP page
+          setLoggedIn(true);
+        }}
       />
     </> 
   )
