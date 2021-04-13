@@ -138,6 +138,7 @@ const Form = (props) => {
           value={props.credentials.email.value}
           onChange={props.credentials.email.update}
           error={props.loginState === 'invalid'}
+          disabled={props.loginState === 'in-progress'}
         />
         <TextField
           variant="outlined"
@@ -147,6 +148,7 @@ const Form = (props) => {
           className={classes.formTextfield}
           value={props.credentials.password.value}
           onChange={props.credentials.password.update}
+          disabled={props.loginState === 'in-progress'}
         />
         <Button
           variant="contained"
