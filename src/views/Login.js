@@ -137,6 +137,7 @@ const Form = (props) => {
           className={classes.formTextfield}
           value={props.credentials.email.value}
           onChange={props.credentials.email.update}
+          error={props.loginState === 'invalid'}
         />
         <TextField
           variant="outlined"
@@ -169,11 +170,11 @@ const Login = (props) => {
 
   const [ email, setEmail ] = React.useState('');
   const [ password, setPassword ] = React.useState('');
-  const [ loggedIn, setLoggedIn ] = React.useState(false);
+  const [ loginState, setLoginState ] = React.useState('waiting');
 
   // trivial redirect to OTP view until the backend service
   // is hooked up to the frontend
-  if (loggedIn) {
+  if (loginState === 'done') {
     return (
       <Redirect to={{
         pathname: "/otp",
@@ -203,12 +204,24 @@ const Login = (props) => {
         }}
 
         login={async () => {
+
+          // check emaill format validity
+          if (!email.match(/.+@.+\..+/)) {
+            setLoginState('invalid');
+            setTimeout(() => setLoginState('waiting'), 1000);
+            return;
+          }
+
+          // start login process
+          setLoginState('in-progress');
           // this will always fail because OTP is not being provided; however,
           // this must be done to trigger an OTP dispatch from Wealthsimple
           await sendLogin(email, password).catch(() => {});
           // move the user to the OTP page
-          setLoggedIn(true);
+          setLoginState('done');
         }}
+
+        loginState={loginState}
       />
     </> 
   )
