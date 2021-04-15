@@ -34,7 +34,7 @@ const styles = makeStyles(theme => ({
     const css = {
       margin: "5% 0px",
       position: "absolute",
-      maxHeight: "80%",
+      backgroundColor: theme.palette.background.main,
     };
 
     // No size limitations on content if we're on electron app.
@@ -51,6 +51,7 @@ const styles = makeStyles(theme => ({
       return {
         ...css,
         padding: theme.spacing(4),
+        minHeight: "100%"
       }
     }
 
@@ -58,6 +59,7 @@ const styles = makeStyles(theme => ({
     return {
       ...css,
       maxWidth: "40%",
+      maxHeight: "80%",
       padding: theme.spacing(3),
       border: 'dotted 2px gray'
     };
