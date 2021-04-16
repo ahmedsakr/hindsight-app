@@ -4,7 +4,8 @@ import {
   Grid,
   Typography,
   TextField,
-  Button
+  Button,
+  useTheme
 } from '@material-ui/core';
 import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
@@ -33,31 +34,38 @@ const styles = makeStyles(theme => ({
     width: props.screen === 'small' ? "100%" : "75%",
     marginTop: theme.spacing(6)
   }),
-  otpField: props => {
-    let border = theme.palette.secondary.dark;
-    if (props.login === 'invalid') {
-      border = 'red';
-    } else if (props.login === 'valid') {
-      border = theme.palette.primary.main
-    }
-
-    return {
+  otpField: props => ({
       flexShrink: 1,
       margin: `0px ${theme.spacing(1)}px`,
       '& input': {
         color: theme.palette.secondary.main,
         fontSize: '1.5rem',
         padding: `${theme.spacing(2.5)}px ${theme.spacing(props.screen === 'small' ? 0 : 1.25)}px`,
-        border: `solid 2px ${border}`,
         borderRadius: 6,
         textAlign: "center"
       },
-    }
-  },
+  }),
+  textfieldOverride: {
+    border: 'none',
+  }
 }));
 
 const CursorFocusableOtpField = (props) => {
   const screen = useScreenSize();
+  const theme = useTheme();
+
+  const [ border, setBorder ] = React.useState(theme.palette.secondary.dark);
+
+  React.useEffect(() => {
+    if (props.login === 'invalid') {
+      setBorder('red');
+    } else if (props.login === 'valid') {
+      setBorder(theme.palette.primary.main);
+    } else {
+      setBorder(theme.palette.secondary.dark);
+    }
+  }, [ props.login, theme.palette ]);
+
   const classes = styles({ ...props, screen });
   const ref = React.useRef();
 
@@ -79,6 +87,15 @@ const CursorFocusableOtpField = (props) => {
       onMouseDown={() => {
         if (props.otpFocus.state.enabled && props.otpFocus.state.index !== props.idx) {
           props.otpFocus.disable();
+        }
+      }}
+      InputProps={{
+        classes: {
+          input: classes.textfieldOverride,
+          root: classes.textfieldOverride
+        },
+        style: {
+          border: `solid 1px ${border}`
         }
       }}
     />
@@ -172,7 +189,9 @@ const OTP = (props) => {
       })
       .then(() => {
         // Revert back to waiting state after 1 second
-        setTimeout(() => setLogin('waiting'), 1000);
+        setTimeout(() => {
+          setLogin('waiting')
+        }, 1000);
       })
     }
   }, [ otp, props.location.state ]);
