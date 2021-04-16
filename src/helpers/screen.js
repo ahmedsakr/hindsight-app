@@ -1,6 +1,8 @@
 import { useMediaQuery } from '@material-ui/core';
 import React from 'react';
 
+export const isElectron = process.env.REACT_APP_DESKTOP_APP === 'true';
+
 /**
  * Tracks the size of the screen on a bimodal level: small or regular.
  * This is good enough for the application.
@@ -9,7 +11,6 @@ import React from 'react';
  */
 export const useScreenSize = () => {
   const isBigScreen = useMediaQuery('(min-width:1024px');
-  const isElectron = process.env.REACT_APP_DESKTOP_APP === 'true';
   const [ screen, setScreen ] = React.useState(isElectron ? 'regular' : 'small');
 
   if (isElectron && screen === 'regular') {

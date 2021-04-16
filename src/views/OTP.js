@@ -9,7 +9,7 @@ import {
 import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
 import { Redirect } from 'react-router';
-import { useScreenSize } from '../helpers/screen';
+import { isElectron, useScreenSize } from '../helpers/screen';
 
 const styles = makeStyles(theme => ({
   root: props => ({
@@ -20,7 +20,7 @@ const styles = makeStyles(theme => ({
   content: props => ({
     flexDirection: 'column',
     alignItems: "center",
-    marginTop: props.screen === 'small' ? theme.spacing(4) : 0,
+    marginTop: !isElectron ? theme.spacing(4) : 0,
   }),
   contentBody: {
     width: "60%",
@@ -190,7 +190,7 @@ const OTP = (props) => {
   if (login === 'waiting' && Object.keys(tokens).length > 0) {
     return (
       <Redirect to={{
-        pathname: "/insights",
+        pathname: "/loading",
         state: tokens
       }}
       />

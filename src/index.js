@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom';
 import Insights from './views/Insights';
 import { useScreenSize } from './helpers/screen';
+import Loading from './views/Loading';
 
 const styles = makeStyles(theme => ({
   root: props => {
@@ -87,6 +88,7 @@ ReactDOM.render(
         <Router>
           <Switch>
             <Route path="/insights" component={Insights} />
+            <Route path="/loading" component={Loading} />
             <Route path="/otp" component={OTP} />
             <Route path="/" component={Login} />
           </Switch>
