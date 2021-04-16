@@ -30,7 +30,7 @@ const styles = makeStyles(theme => ({
   }),
   otp: props => ({
     flexWrap: "nowrap",
-    width: props.screen === 'small' ? "100%" : "50%",
+    width: props.screen === 'small' ? "100%" : "75%",
     marginTop: theme.spacing(6)
   }),
   otpField: props => {
@@ -47,7 +47,7 @@ const styles = makeStyles(theme => ({
       '& input': {
         color: theme.palette.secondary.main,
         fontSize: '1.5rem',
-        padding: `${theme.spacing(2.5)}px ${theme.spacing(1.25)}px`,
+        padding: `${theme.spacing(2.5)}px ${theme.spacing(props.screen === 'small' ? 0 : 1.25)}px`,
         border: `solid 2px ${border}`,
         borderRadius: 6,
         textAlign: "center"
