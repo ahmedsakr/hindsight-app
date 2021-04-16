@@ -225,14 +225,21 @@ const OTP = (props) => {
         otp={{
           current: otp,
           update: (index, value) => {
-            if (value === '' || (otp[index] === '' && value.match(/[0-9]/))) {
-              const copy = [...otp];
-              copy[index] = value;
 
-              setOtp(copy);
+            if (value === '' || otp[index] === '') {
 
-              if (otpFocus.enabled) {
-                setOtpFocus({ ...otpFocus, index: otpFocus.index + 1 });
+              if (value.length === 6) {
+                setOtp(value.split(''));
+                setOtpFocus({ ...otpFocus, index: 5 });
+              } else if (value === '' || value.match(/[0-9]/)) {
+                const copy = [...otp];
+                copy[index] = value;
+
+                setOtp(copy);
+
+                if (otpFocus.enabled) {
+                  setOtpFocus({ ...otpFocus, index: otpFocus.index + 1 });
+                }
               }
             }
           }
