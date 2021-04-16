@@ -51,8 +51,11 @@ const styles = makeStyles(theme => ({
     if (props.screen === 'small') {
       return {
         ...css,
-        padding: theme.spacing(4),
-        minHeight: "100%"
+        padding: `0px ${theme.spacing(4)}px`,
+        minHeight: "100%",
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center'
       }
     }
 

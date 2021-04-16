@@ -10,6 +10,7 @@ import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
 import { Redirect } from 'react-router';
 import { isElectron, useScreenSize } from '../helpers/screen';
+import { isMobile } from 'react-device-detect';
 
 const styles = makeStyles(theme => ({
   root: props => ({
@@ -22,11 +23,11 @@ const styles = makeStyles(theme => ({
     alignItems: "center",
     marginTop: !isElectron ? theme.spacing(4) : 0,
   }),
-  contentBody: {
-    width: "60%",
+  contentBody: props => ({
+    width: props.screen === 'small' ? "75%" : "60%",
     textAlign: "center",
     marginTop: theme.spacing(2),
-  },
+  }),
   otp: props => ({
     flexWrap: "nowrap",
     width: props.screen === 'small' ? "100%" : "50%",
@@ -70,6 +71,7 @@ const CursorFocusableOtpField = (props) => {
     <TextField
       inputRef={ref}
       variant="outlined"
+      type={isMobile ? 'number' : 'text' }
       className={classes.otpField}
       value={props.otp.current[props.idx]}
       onChange={(event) => props.otp.update(props.idx, event.target.value)}
@@ -131,7 +133,7 @@ const Content = (props) => {
         style={{ marginTop: "5%" }}
         onClick={props.cancel}
       >
-        🠔 Cancel
+        ← Cancel
       </Button>
     </Grid>
   )
@@ -176,7 +178,7 @@ const OTP = (props) => {
   }, [ otp, props.location.state ]);
 
   // Redirect back to login page if user has cancelled.
-  if (cancel) {
+  if (cancel || !props.location.state) {
     return (
       <Redirect to={{
         pathname: "/",

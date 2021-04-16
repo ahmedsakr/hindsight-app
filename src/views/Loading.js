@@ -3,7 +3,7 @@ import {
   makeStyles,
   Grid,
   Typography,
-  Divider
+  LinearProgress
 } from '@material-ui/core';
 import { SideLogo } from '../components/Logo';
 import { isElectron, useScreenSize } from '../helpers/screen';
@@ -19,12 +19,20 @@ const styles = makeStyles(theme => ({
     flexDirection: "column",
     marginTop: !isElectron ? theme.spacing(4) : 0,
   },
-  progressBar: {
+  title: {
+    textAlign: "center"
+  },
+  contentBody: props => ({
+    width: props.screen === 'small' ? "75%" : "40%",
+    textAlign: "center"
+  }),
+  progressBar: props => ({
     height: 5,
-    backgroundColor: theme.palette.secondary.main,
-    width: "50%",
-    margin: `${theme.spacing(4)}px 0px`
-  }
+    width: props.screen === 'small' ? "75%" : "50%",
+    marginBottom: theme.spacing(4),
+    marginTop: theme.spacing(2),
+    backgroundColor: theme.palette.primary.main
+  }),
 }));
 
 const Loading = (props) => {
@@ -38,16 +46,17 @@ const Loading = (props) => {
         <Typography
           variant="h4"
           color="secondary"
+          className={classes.title}
         >
-          Getting things ready
+          Preparing your insights
         </Typography>
-        <Divider className={classes.progressBar} />
+        <LinearProgress color="primary" className={classes.progressBar} />
         <Typography
           variant="body2"
           color="textSecondary"
           className={classes.contentBody}
         >
-          We're fetching the data we need to generate pretty graphs
+          Hang tight! We are fetching the data we need to generate pretty graphs
           for you!
         </Typography>
       </Grid>

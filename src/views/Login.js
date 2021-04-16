@@ -29,9 +29,14 @@ const styles = makeStyles(theme => ({
     margin: 0,
     lineHeight: 1
   },
-  wealthsimpleConnect: {
+  wealthsimpleConnect: props => ({
+    flexDirection: props.screen === 'small' ? 'column' : 'row',
+    alignItems: props.screen === 'small' ? 'center' : 'flex-start',
     justifyContent: "center",
-  },
+  }),
+  wsLogo: props => ({
+    marginLeft: props.screen === 'small' ? 0 : theme.spacing(2),
+  }),
   wsLogoIcon: {
     width: 36,
     height: 36,
@@ -98,8 +103,8 @@ const Header = (props) => {
 }
 
 const WealthsimpleConnect = (props) => {
-  const classes = styles(props);
-  const theme = useTheme();
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
 
   return (
     <Grid container className={classes.wealthsimpleConnect}>
@@ -111,7 +116,7 @@ const WealthsimpleConnect = (props) => {
       </Typography>
       <Grid
         item
-        style={{ marginLeft: theme.spacing(2) }}
+        className={classes.wsLogo}
       >
         <img src={WSIcon} className={classes.wsLogoIcon} alt="Wealthsimple Trade circle logo" />
         <img src={WSLogoText} className={classes.wsLogoText} alt="Wealthsimple Trade text logo" />
