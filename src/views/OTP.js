@@ -12,6 +12,7 @@ import sendLogin from '../services/login';
 import { Redirect } from 'react-router';
 import { isElectron, useScreenSize } from '../helpers/screen';
 import { isMobile } from 'react-device-detect';
+import AuthenticatedView from '../helpers/authentication';
 
 const styles = makeStyles(theme => ({
   root: props => ({
@@ -157,7 +158,7 @@ const Content = (props) => {
 }
 
 
-const OTP = (props) => {
+const OTP = AuthenticatedView(props => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
   const [ otp, setOtp ] = React.useState(['', '', '', '', '', '']);
@@ -197,7 +198,7 @@ const OTP = (props) => {
   }, [ otp, props.location.state ]);
 
   // Redirect back to login page if user has cancelled.
-  if (cancel || !props.location.state) {
+  if (cancel) {
     return (
       <Redirect to={{
         pathname: "/",
@@ -255,6 +256,6 @@ const OTP = (props) => {
       />
     </Grid>
   );
-};
+});
 
 export default OTP;

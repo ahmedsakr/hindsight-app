@@ -4,7 +4,7 @@ import {
   Grid,
   Typography
 } from '@material-ui/core';
-import { Redirect } from 'react-router';
+import AuthenticatedView from '../helpers/authentication';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -13,20 +13,8 @@ const styles = makeStyles(theme => ({
   },
 }));
 
-const Insights = (props) => {
+const Insights = AuthenticatedView(props => {
   const classes = styles(props);
-
-  // Move back to the login page if we don't have tokens
-  // (user might have manually navigated to this view)
-  if (!props.location.state) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/"
-        }}
-      />
-    );
-  }
 
   return (
     <Grid container className={classes.root}>
@@ -38,6 +26,6 @@ const Insights = (props) => {
       </Typography>
     </Grid>
   )
-}
+});
 
 export default Insights;

@@ -9,6 +9,7 @@ import { SideLogo } from '../components/Logo';
 import { isElectron, useScreenSize } from '../helpers/screen';
 import { Redirect } from 'react-router';
 import fetchInsightsData from '../services/insights';
+import AuthenticatedView from '../helpers/authentication';
 
 const styles = makeStyles(theme => ({
   root: props => ({
@@ -37,7 +38,7 @@ const styles = makeStyles(theme => ({
   }),
 }));
 
-const Loading = (props) => {
+const Loading = AuthenticatedView(props => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
   const [ accountData, setAccountData ] = React.useState(null);
@@ -48,18 +49,6 @@ const Loading = (props) => {
     .then((response) => response.json())
     .then(setAccountData)
   }, [ props.location.state ]);
-
-  // Move back to the login page if we don't have tokens
-  // (user might have manually navigated to this view)
-  if (!props.location.state) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/"
-        }}
-      />
-    );
-  }
 
   // redirect to insights once we have received the payload from Wealthsimple
   if (accountData) {
@@ -96,6 +85,6 @@ const Loading = (props) => {
       </Grid>
     </Grid>
   );
-}
+});
 
 export default Loading;
