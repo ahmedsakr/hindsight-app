@@ -43,6 +43,7 @@ const styles = makeStyles(theme => ({
         fontSize: '1.5rem',
         padding: `${theme.spacing(2.5)}px ${theme.spacing(props.screen === 'small' ? 0 : 1.25)}px`,
         borderRadius: 6,
+        border: `solid 1px ${props.border}`,
         textAlign: "center"
       },
   }),
@@ -67,7 +68,7 @@ const CursorFocusableOtpField = (props) => {
     }
   }, [ props.login, theme.palette ]);
 
-  const classes = styles({ ...props, screen });
+  const classes = styles({ ...props, border, screen });
   const ref = React.useRef();
 
   React.useEffect(() => {
@@ -81,7 +82,6 @@ const CursorFocusableOtpField = (props) => {
       inputRef={ref}
       variant="outlined"
       type={isMobile ? 'number' : 'text' }
-      className={classes.otpField}
       value={props.otp.current[props.idx]}
       onChange={(event) => props.otp.update(props.idx, event.target.value)}
       disabled={props.login === 'in-progress'}
@@ -92,11 +92,7 @@ const CursorFocusableOtpField = (props) => {
       }}
       InputProps={{
         classes: {
-          input: classes.textfieldOverride,
-          root: classes.textfieldOverride
-        },
-        style: {
-          border: `solid 1px ${border}`
+          root: classes.otpField
         }
       }}
     />
