@@ -8,6 +8,7 @@ import {
 } from '@material-ui/core';
 import AuthenticatedView from '../helpers/authentication';
 import { SideLogo } from '../components/Logo';
+import { supportedInsights } from '../components/insights/supported';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -39,7 +40,7 @@ const styles = makeStyles(theme => ({
     height: 2,
     width: "100%",
     backgroundColor: theme.palette.secondary.dark,
-    marginTop: theme.spacing(4)
+    margin: `${theme.spacing(4)}px 0px`
   }
 }));
 
@@ -84,13 +85,20 @@ const Header = (props) => {
   );
 }
 
+// Render the appropriate insight based on the index we're at.
+const Insight = (props) => React.cloneElement(supportedInsights[props.index], props)
+
 const Insights = AuthenticatedView(props => {
   const classes = styles(props);
+
+  // we will start off on the first insight
+  const [ insight, setInsight ] = React.useState(0);
 
   return (
     <Grid container className={classes.root}>
       <Header { ...props } />
       <Divider className={classes.divider} />
+      <Insight index={insight} {...props}/>
     </Grid>
   )
 });
