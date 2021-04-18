@@ -10,7 +10,7 @@ import {
 import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
 import { Redirect } from 'react-router';
-import { isElectron, useScreenSize } from '../helpers/screen';
+import { isElectron, useScreenSize, useScreenStyles } from '../helpers/screen';
 import { isMobile } from 'react-device-detect';
 import AuthenticatedView from '../helpers/authentication';
 
@@ -74,9 +74,8 @@ const useOTPBoxBorder = (login) => {
 }
 
 const CursorFocusableOtpField = (props) => {
-  const screen = useScreenSize();
+  const classes = useScreenStyles(props, styles);
   const ref = React.useRef();
-  const classes = styles({ ...props, screen });
 
   React.useEffect(() => {
     if (props.otpFocus.state.enabled && props.otpFocus.state.index === props.idx) {
@@ -108,8 +107,8 @@ const CursorFocusableOtpField = (props) => {
 
 const Form = (props) => {
   const screen = useScreenSize();
-  const classes = styles({ ...props, screen });
   const border = useOTPBoxBorder(props.login);
+  const classes = styles({ ...props, screen });
 
   return (
     <Grid container className={classes.otp}>
