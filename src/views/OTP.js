@@ -10,7 +10,7 @@ import {
 import { SideLogo } from '../components/Logo';
 import sendLogin from '../services/login';
 import { Redirect } from 'react-router';
-import { isElectron, useScreenSize, useScreenStyles } from '../helpers/screen';
+import { isElectron, useScreenSize } from '../helpers/screen';
 import { isMobile } from 'react-device-detect';
 import AuthenticatedView from '../helpers/authentication';
 
