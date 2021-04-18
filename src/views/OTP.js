@@ -68,7 +68,6 @@ const CursorFocusableOtpField = (props) => {
     }
   }, [ props.login, theme.palette ]);
 
-  const classes = styles({ ...props, border, screen });
   const ref = React.useRef();
 
   React.useEffect(() => {
@@ -92,7 +91,7 @@ const CursorFocusableOtpField = (props) => {
       }}
       InputProps={{
         classes: {
-          root: classes.otpField
+          root: styles({ ...props, border, screen }).otpField
         }
       }}
     />
