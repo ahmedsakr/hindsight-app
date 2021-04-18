@@ -96,7 +96,7 @@ const Insights = AuthenticatedView(props => {
 
   return (
     <Grid container className={classes.root}>
-      <Header { ...props } />
+      <Header setInsight={setInsight} { ...props } />
       <Divider className={classes.divider} />
       <Insight index={insight} {...props}/>
     </Grid>
