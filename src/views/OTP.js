@@ -43,7 +43,6 @@ const styles = makeStyles(theme => ({
         fontSize: '1.5rem',
         padding: `${theme.spacing(2.5)}px ${theme.spacing(props.screen === 'small' ? 0 : 1.25)}px`,
         borderRadius: 6,
-        border: `solid 1px ${props.border}`,
         textAlign: "center"
       },
   }),
@@ -74,7 +73,8 @@ const useOTPBoxBorder = (login) => {
 }
 
 const CursorFocusableOtpField = (props) => {
-  const classes = useScreenStyles(props, styles);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
   const ref = React.useRef();
 
   React.useEffect(() => {
@@ -99,6 +99,9 @@ const CursorFocusableOtpField = (props) => {
       InputProps={{
         classes: {
           root: classes.otpField
+        },
+        style: {
+          border: `solid 1px ${props.border}`,
         }
       }}
     />

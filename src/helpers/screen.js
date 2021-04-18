@@ -27,8 +27,3 @@ export const useScreenSize = () => {
 
   return screen;
 }
-
-export const useScreenStyles = (props, stylesFunc) => {
-  const screen = useScreenSize();
-  return stylesFunc({ ...props, screen });
-}
