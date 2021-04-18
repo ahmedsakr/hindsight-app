@@ -52,23 +52,31 @@ const styles = makeStyles(theme => ({
   }
 }));
 
-const CursorFocusableOtpField = (props) => {
-  const screen = useScreenSize();
+/*
+ * React hook for determing the appropriate border color for OTP fields
+ * based on the login state.
+ */
+const useOTPBoxBorder = (login) => {
   const theme = useTheme();
-
   const [ border, setBorder ] = React.useState(theme.palette.secondary.dark);
 
   React.useEffect(() => {
-    if (props.login === 'invalid') {
+    if (login === 'invalid') {
       setBorder('red');
-    } else if (props.login === 'valid') {
+    } else if (login === 'valid') {
       setBorder(theme.palette.primary.main);
     } else {
       setBorder(theme.palette.secondary.dark);
     }
-  }, [ props.login, theme.palette ]);
+  }, [ login, theme.palette ]);
 
+  return border;
+}
+
+const CursorFocusableOtpField = (props) => {
+  const screen = useScreenSize();
   const ref = React.useRef();
+  const classes = styles({ ...props, screen });
 
   React.useEffect(() => {
     if (props.otpFocus.state.enabled && props.otpFocus.state.index === props.idx) {
@@ -91,7 +99,7 @@ const CursorFocusableOtpField = (props) => {
       }}
       InputProps={{
         classes: {
-          root: styles({ ...props, border, screen }).otpField
+          root: classes.otpField
         }
       }}
     />
@@ -101,6 +109,8 @@ const CursorFocusableOtpField = (props) => {
 const Form = (props) => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
+  const border = useOTPBoxBorder(props.login);
+
   return (
     <Grid container className={classes.otp}>
       {
@@ -109,6 +119,7 @@ const Form = (props) => {
             <CursorFocusableOtpField
               idx={idx}
               key={idx}
+              border={border}
               {...props}
             />
           );
