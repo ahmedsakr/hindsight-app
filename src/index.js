@@ -62,8 +62,8 @@ const styles = makeStyles(theme => ({
     // we're on a big screen
     return {
       ...css,
-      maxWidth: "40%",
-      maxHeight: "80%",
+      maxWidth: 1000,
+      minWidth: 700,
       padding: theme.spacing(3),
       border: 'dotted 2px gray'
     };

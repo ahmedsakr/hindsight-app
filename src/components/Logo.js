@@ -5,12 +5,13 @@ import {
   Grid
 } from '@material-ui/core';
 import PNGLogo from '../assets/tradingreflections-logo-png.png';
-
+import { isElectron } from '../helpers/screen';
 
 const styles = makeStyles(theme => ({
   logo: props => ({
     width: props.full ? '80%': 156,
-    height: props.full ? '26%': 69
+    height: props.full ? '26%': 69,
+    maxWidth: isElectron ? '100%' : "300px"
   }),
   sideLogo: {
     flexDirection: 'column',

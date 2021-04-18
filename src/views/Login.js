@@ -19,11 +19,11 @@ const styles = makeStyles(theme => ({
   root: {
     display: 'flex',
     justifyContent: 'center',
+    alignItems: "center"
   },
   header: {
     alignItems: "center",
     flexDirection: "column",
-    marginBottom: "10%"
   },
   headerText: {
     margin: 0,
@@ -31,7 +31,7 @@ const styles = makeStyles(theme => ({
   },
   wealthsimpleConnect: props => ({
     flexDirection: props.screen === 'small' ? 'column' : 'row',
-    alignItems: props.screen === 'small' ? 'center' : 'flex-start',
+    alignItems: 'center',
     justifyContent: "center",
   }),
   wsLogo: props => ({
@@ -195,7 +195,7 @@ const Login = (props) => {
   }
 
   return (
-    <>
+    <Grid container className={classes.root}>
       <Header />
       <Divider className={classes.divider}/>
       <Form
@@ -230,7 +230,7 @@ const Login = (props) => {
 
         loginState={loginState}
       />
-    </> 
+    </Grid> 
   )
 };
 
