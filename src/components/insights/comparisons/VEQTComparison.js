@@ -26,7 +26,7 @@ const buildData = (performance, veqt) => {
       return 0;
     }
 
-    return ((veqt[index].adjusted_price - veqt[index - 1].adjusted_price) / 100) * performance[index].net_deposits.amount
+    return ((veqt[index].adjusted_price - veqt[index - 1].adjusted_price) / veqt[index - 1].adjusted_price) * performance[index].net_deposits.amount
   }
   const data = [];
   let veqtTotalGain = 0;
