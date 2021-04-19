@@ -20,7 +20,7 @@ const styles = makeStyles(theme => ({
   }
 }));
 
-const buildData = (performance, veqt) => {
+const buildData = (account, performance, veqt) => {
   const veqtDayGain = (index) => {
     if (index === 0 || performance[index].net_deposits.amount < 0) {
       return 0;
@@ -37,7 +37,7 @@ const buildData = (performance, veqt) => {
 
     data.push({
       name: performance[i].date,
-      portfolio: (performance[i].value.amount - performance[i].net_deposits.amount) - startingPortfolioGain,
+      [account]: (performance[i].value.amount - performance[i].net_deposits.amount) - startingPortfolioGain,
       VEQT: veqtTotalGain
     })
   }
@@ -47,8 +47,9 @@ const buildData = (performance, veqt) => {
 
 const InsightText = (props) => {
   const { data } = props;
+  const theme = useTheme();
   const classes = styles(props);
-  const gainOverVeqt = data[data.length - 1].portfolio - data[data.length - 1].VEQT;
+  const gainOverVeqt = data[data.length - 1].tfsa - data[data.length - 1].VEQT;
   const startingDate = new Date(data[0].name).toDateString();
 
   return (
@@ -56,8 +57,17 @@ const InsightText = (props) => {
       color="secondary"
       className={classes.insightInfo}
     >
-      Since {startingDate}, your portfolio has returned <span style={{ color: "red" }}>{`$${gainOverVeqt} CAD`}</span> less than
-      the Vanguard All-Equity ETF (VEQT)
+      Since {startingDate}, your {props.account} has returned
+      <span
+        style={{
+          color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main,
+        }}
+      >
+        {` $${Math.round(Math.abs(gainOverVeqt))} CAD `}
+        {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
+      </span>
+      less than
+      a 100% Vanguard All-Equity ETF (VEQT) portfolio
     </Typography>
   );
 }
@@ -67,11 +77,11 @@ const VEQTComparison = (props) => {
   const classes = styles(props);
   const userData = props.location.state;
 
-  const data = buildData(userData.performance.tfsa.results, userData.securities.history.veqt.results);
+  const data = buildData('tfsa', userData.performance.tfsa.results, userData.securities.history.veqt.results);
 
   return (
     <Grid container className={classes.root}>
-      <InsightText data={data} />
+      <InsightText data={data} account='TFSA' />
       <Grid container style={{ minHeight: 200, flexDirection: 'column', position: 'relative' }}>
         <Grid item>
           <ResponsiveContainer width={"95%"} height={200}>
@@ -91,7 +101,7 @@ const VEQTComparison = (props) => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Area type="monotone" dataKey="portfolio" stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
+              <Area type="monotone" dataKey="tfsa" stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
               <Area type="monotone" dataKey="VEQT" stroke={'orange'} dot={false} fill="url(#VEQT)" fillOpacity={1}/>
             </AreaChart>
           </ResponsiveContainer>
