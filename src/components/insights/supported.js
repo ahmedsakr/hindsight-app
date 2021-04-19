@@ -1,6 +1,6 @@
 import React from 'react';
-import VTIComparison from "./comparisons/VTIComparison";
+import VEQTComparison from "./comparisons/VEQTComparison";
 
 export const supportedInsights = [
-  <VTIComparison />,
+  <VEQTComparison />,
 ];
