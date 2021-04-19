@@ -11,12 +11,21 @@ const styles = makeStyles(theme => ({
   root: {
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: "center"
+    alignItems: "center",
+    flex: 1
   },
   insightInfo: {
-    fontSize: 24,
+    flexDirection: 'column',
     width: "75%",
-    textAlign: "center"
+    textAlign: "center",
+    margin: `${theme.spacing(2)}px 0px`
+  },
+  insightMetric: {
+    fontSize: 24,
+    fontWeight: 700,
+  },
+  insightDescription: {
+    fontSize: 16,
   }
 }));
 
@@ -56,22 +65,29 @@ const InsightText = (props) => {
   const startingDate = new Date(data[0].name).toDateString();
 
   return (
-    <Typography
-      color="secondary"
-      className={classes.insightInfo}
-    >
-      Since {startingDate}, your {props.account} has returned
-      <span
-        style={{
-          color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main,
-        }}
+    <Grid container className={classes.insightInfo}>
+      <Typography
+        color="secondary"
+        className={classes.insightMetric}
       >
-        {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2))} CAD `}
-        {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
-      </span>
-      less than
-      a 100% Vanguard All-Equity ETF (VEQT) portfolio
-    </Typography>
+        <span
+          style={{
+            color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main,
+          }}
+        >
+          {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2))} CAD `}
+          {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
+        </span>
+      </Typography>
+      <Typography
+        color="secondary"
+        className={classes.insightDescription}
+      >
+        Since {startingDate}, your {props.account} has returned
+        {` $${Math.abs(gainOverVeqt)} CAD`} {gainOverVeqt < 0 ? `less` : `more`} compared
+        to if your {props.account} was 100% Vanguard All-Equity ETF (VEQT)
+      </Typography>
+    </Grid>
   );
 }
 

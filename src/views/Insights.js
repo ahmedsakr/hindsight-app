@@ -9,6 +9,7 @@ import {
 import AuthenticatedView from '../helpers/authentication';
 import { SideLogo } from '../components/Logo';
 import { supportedInsights } from '../components/insights/supported';
+import { useScreenSize } from '../helpers/screen';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -16,10 +17,14 @@ const styles = makeStyles(theme => ({
     height: "100%",
     flexDirection: "column"
   },
-  header: {
+  header: props => ({
     justifyContent: "space-between",
-    alignItems: "center"
-  },
+    alignItems: "center",
+    flexDirection: props.screen === 'small' ? 'column' : 'row',
+    '& > *': {
+      margin: props.screen === 'small' ? `${theme.spacing(1)}px 0px` : 0,
+    }
+  }),
   headerTitle: {
     display: 'flex',
     alignItems: 'center'
@@ -30,6 +35,7 @@ const styles = makeStyles(theme => ({
   },
   navigatingButton: {
     border: `solid 1px ${theme.palette.primary.main}`,
+    backgroundColor: theme.palette.primary.main,
     minWidth: 0,
     fontWeight: 700,
     fontSize: 20,
@@ -45,7 +51,8 @@ const styles = makeStyles(theme => ({
 }));
 
 const Header = (props) => {
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
   return (
     <Grid container className={classes.header}>
       <SideLogo />
