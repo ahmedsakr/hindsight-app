@@ -100,7 +100,7 @@ const VEQTComparison = (props) => {
 
   React.useEffect(() => {
     setData(buildData(props.account, userData.performance[props.account.toLowerCase()].results, userData.securities.history.veqt.results))
-  }, [ props.account ]);
+  }, [ props.account, userData ]);
 
   if (!data) {
     return <></>
