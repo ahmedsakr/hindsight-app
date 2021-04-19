@@ -30,7 +30,8 @@ const styles = makeStyles(theme => ({
   headerMiddle: {
     display: 'flex',
     alignItems: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    flex: 4,
   },
   headerTitle: {
     display: 'flex',
@@ -39,6 +40,11 @@ const styles = makeStyles(theme => ({
   headerUserName: {
     fontWeight: 700,
     marginLeft: theme.spacing(1),
+  },
+  navigation: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   navigatingButton: {
     border: `solid 1px ${theme.palette.primary.main}`,
@@ -56,10 +62,14 @@ const styles = makeStyles(theme => ({
     margin: `${theme.spacing(4)}px 0px`
   },
   accountSelection: {
-    border: `solid 2px ${theme.palette.secondary.main}`,
+    border: `solid 2px ${theme.palette.secondary.dark}`,
     borderRadius: 6,
     padding: `0px ${theme.spacing(1.5)}px`,
     marginTop: theme.spacing(1),
+    color: theme.palette.secondary.main
+  },
+  selectIcon: {
+    color: theme.palette.secondary.main
   }
 }));
 
@@ -68,7 +78,10 @@ const Header = (props) => {
   const classes = styles({ ...props, screen });
   return (
     <Grid container className={classes.header}>
-      <SideLogo />
+      <Grid item style={{ flex: 1, }}>
+        <SideLogo />
+      </Grid>
+
       <Grid item className={classes.headerMiddle}>
         <Grid item className={classes.headerTitle}>
           <Typography
@@ -89,6 +102,9 @@ const Header = (props) => {
             defaultValue={props.account}
             onChange={(event) => props.setAccount(event.target.value)}
             className={classes.accountSelection}
+            classes={{
+              icon: classes.selectIcon
+            }}
           >
             {
               Object.keys(props.location.state.performance).map((account, id) => {
@@ -105,7 +121,7 @@ const Header = (props) => {
             }
         </Select>
       </Grid>
-      <Grid item>
+      <Grid item className={classes.navigation}>
         <Button
           color="secondary"
           variant="outlined"

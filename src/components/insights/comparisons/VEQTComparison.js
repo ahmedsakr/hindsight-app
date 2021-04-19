@@ -103,8 +103,9 @@ const VEQTComparison = (props) => {
   }, [ props.account, userData ]);
 
   if (!data) {
-    return <></>
+    return <></>;
   }
+
   return (
     <Grid container className={classes.root}>
       <InsightText data={data} account={props.account} />
