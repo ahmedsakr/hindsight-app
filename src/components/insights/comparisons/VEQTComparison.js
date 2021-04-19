@@ -20,36 +20,39 @@ const styles = makeStyles(theme => ({
   }
 }));
 
+// Rounds an number to the specified decimal points
+const roundTo = (num, digits) => Math.round((num + Number.EPSILON) * (10^digits)) / (10^digits);
+
 const buildData = (account, performance, veqt) => {
   const veqtDayGain = (index) => {
     if (index === 0 || performance[index].net_deposits.amount < 0) {
       return 0;
     }
 
-    return ((veqt[index].adjusted_price - veqt[index - 1].adjusted_price) / veqt[index - 1].adjusted_price) * performance[index].net_deposits.amount
+    const dayPercentGain = (veqt[index].adjusted_price - veqt[index - 1].adjusted_price) / veqt[index - 1].adjusted_price;
+    return dayPercentGain * performance[index].net_deposits.amount;
   }
-  const data = [];
-  let veqtTotalGain = 0;
-  let startingPortfolioGain = performance[0].value.amount - performance[0].net_deposits.amount
 
-  for (let i = 0; i < performance.length; i += 1) {
+  let veqtTotalGain = 0, accountTotalGain = 0;
+  let startingPortfolioGain = performance[0].value.amount - performance[0].net_deposits.amount;
+
+  return performance.map((day, i) => {
     veqtTotalGain += veqtDayGain(i);
-
-    data.push({
-      name: performance[i].date,
-      [account]: (performance[i].value.amount - performance[i].net_deposits.amount) - startingPortfolioGain,
-      VEQT: veqtTotalGain
-    })
-  }
-
-  return data;
+    accountTotalGain = (day.value.amount - day.net_deposits.amount) - startingPortfolioGain;
+    
+    return {
+      name: day.date,
+      [account]: roundTo(accountTotalGain, 2),
+      VEQT: roundTo(veqtTotalGain, 2)
+    }
+  });
 }
 
 const InsightText = (props) => {
   const { data } = props;
   const theme = useTheme();
   const classes = styles(props);
-  const gainOverVeqt = data[data.length - 1].tfsa - data[data.length - 1].VEQT;
+  const gainOverVeqt = data[data.length - 1].TFSA - data[data.length - 1].VEQT;
   const startingDate = new Date(data[0].name).toDateString();
 
   return (
@@ -63,7 +66,7 @@ const InsightText = (props) => {
           color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main,
         }}
       >
-        {` $${Math.round(Math.abs(gainOverVeqt))} CAD `}
+        {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2))} CAD `}
         {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
       </span>
       less than
@@ -77,7 +80,7 @@ const VEQTComparison = (props) => {
   const classes = styles(props);
   const userData = props.location.state;
 
-  const data = buildData('tfsa', userData.performance.tfsa.results, userData.securities.history.veqt.results);
+  const data = buildData('TFSA', userData.performance.tfsa.results, userData.securities.history.veqt.results);
 
   return (
     <Grid container className={classes.root}>
@@ -101,7 +104,7 @@ const VEQTComparison = (props) => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Area type="monotone" dataKey="tfsa" stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
+              <Area type="monotone" dataKey="TFSA" label="YAS QUEEN" stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
               <Area type="monotone" dataKey="VEQT" stroke={'orange'} dot={false} fill="url(#VEQT)" fillOpacity={1}/>
             </AreaChart>
           </ResponsiveContainer>
