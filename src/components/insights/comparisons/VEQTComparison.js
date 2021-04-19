@@ -61,7 +61,7 @@ const InsightText = (props) => {
   const { data } = props;
   const theme = useTheme();
   const classes = styles(props);
-  const gainOverVeqt = data[data.length - 1].TFSA - data[data.length - 1].VEQT;
+  const gainOverVeqt = data[data.length - 1][props.account] - data[data.length - 1].VEQT;
   const startingDate = new Date(data[0].name).toDateString();
 
   return (
@@ -96,11 +96,18 @@ const VEQTComparison = (props) => {
   const classes = styles(props);
   const userData = props.location.state;
 
-  const data = buildData('TFSA', userData.performance.tfsa.results, userData.securities.history.veqt.results);
+  const [ data, setData ] = React.useState(null);
 
+  React.useEffect(() => {
+    setData(buildData(props.account, userData.performance[props.account.toLowerCase()].results, userData.securities.history.veqt.results))
+  }, [ props.account ]);
+
+  if (!data) {
+    return <></>
+  }
   return (
     <Grid container className={classes.root}>
-      <InsightText data={data} account='TFSA' />
+      <InsightText data={data} account={props.account} />
       <Grid container style={{ minHeight: 200, flexDirection: 'column', position: 'relative' }}>
         <Grid item>
           <ResponsiveContainer width={"95%"} height={200}>
@@ -120,7 +127,7 @@ const VEQTComparison = (props) => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Area type="monotone" dataKey="TFSA" label="YAS QUEEN" stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
+              <Area type="monotone" dataKey={props.account} stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
               <Area type="monotone" dataKey="VEQT" stroke={'orange'} dot={false} fill="url(#VEQT)" fillOpacity={1}/>
             </AreaChart>
           </ResponsiveContainer>

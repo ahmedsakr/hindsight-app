@@ -5,6 +5,8 @@ import {
   Typography,
   Button,
   Divider,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
 import AuthenticatedView from '../helpers/authentication';
 import { SideLogo } from '../components/Logo';
@@ -25,9 +27,14 @@ const styles = makeStyles(theme => ({
       margin: props.screen === 'small' ? `${theme.spacing(1)}px 0px` : 0,
     }
   }),
+  headerMiddle: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'column'
+  },
   headerTitle: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   headerUserName: {
     fontWeight: 700,
@@ -47,6 +54,12 @@ const styles = makeStyles(theme => ({
     width: "100%",
     backgroundColor: theme.palette.secondary.dark,
     margin: `${theme.spacing(4)}px 0px`
+  },
+  accountSelection: {
+    border: `solid 2px ${theme.palette.secondary.main}`,
+    borderRadius: 6,
+    padding: `0px ${theme.spacing(1.5)}px`,
+    marginTop: theme.spacing(1),
   }
 }));
 
@@ -56,22 +69,42 @@ const Header = (props) => {
   return (
     <Grid container className={classes.header}>
       <SideLogo />
-      <Grid item className={classes.headerTitle}>
-        <Typography
-          variant="h5"
-          color="secondary"
-        >
-          Insights for
-        </Typography>
-        <Typography
-          color="primary"
-          variant="h5"
-          className={classes.headerUserName}
-        >
-          {props.location.state.user.first_name}
-        </Typography>
+      <Grid item className={classes.headerMiddle}>
+        <Grid item className={classes.headerTitle}>
+          <Typography
+            variant="h5"
+            color="secondary"
+          >
+            Insights for
+          </Typography>
+          <Typography
+            color="primary"
+            variant="h5"
+            className={classes.headerUserName}
+          >
+            {props.location.state.user.first_name}
+          </Typography>
+        </Grid>
+        <Select
+            defaultValue={props.account}
+            onChange={(event) => props.setAccount(event.target.value)}
+            className={classes.accountSelection}
+          >
+            {
+              Object.keys(props.location.state.performance).map((account, id) => {
+                return (
+                  <MenuItem
+                    selected={true}
+                    key={id}
+                    value={account.toUpperCase()}
+                  >
+                    {account}
+                  </MenuItem>
+                );
+              })
+            }
+        </Select>
       </Grid>
-
       <Grid item>
         <Button
           color="secondary"
@@ -97,15 +130,25 @@ const Insight = (props) => React.cloneElement(supportedInsights[props.index], pr
 
 const Insights = AuthenticatedView(props => {
   const classes = styles(props);
+  const data = props.location.state;
 
   // we will start off on the first insight
   const [ insight, setInsight ] = React.useState(0);
+  const [ account, setAccount ] = React.useState(Object.keys(data.performance)[0].toUpperCase());
 
   return (
     <Grid container className={classes.root}>
-      <Header setInsight={setInsight} { ...props } />
+      <Header
+        account={account}
+        setAccount={setAccount}
+        setInsight={setInsight}
+        { ...props }
+      />
       <Divider className={classes.divider} />
-      <Insight index={insight} {...props}/>
+      <Insight
+        index={insight}
+        account={account}
+        {...props}/>
     </Grid>
   )
 });
