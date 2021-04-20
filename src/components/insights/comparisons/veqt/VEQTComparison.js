@@ -7,14 +7,16 @@ import {
 } from '@material-ui/core';
 import AreaGraph from '../../../charts/AreaGraph';
 import buildComparison from '../comparator';
+import { useScreenSize } from '../../../../helpers/screen';
 
 const styles = makeStyles(theme => ({
-  root: {
+  root: props => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: "center",
-    flex: 1
-  },
+    flex: 1,
+    padding: props.screen === 'small' ? `${theme.spacing(4)}px 0px` : 0,
+  }),
   insightInfo: {
     flexDirection: 'column',
     width: "75%",
@@ -30,13 +32,11 @@ const styles = makeStyles(theme => ({
   },
 }));
 
-
-
 const InsightText = (props) => {
   const { data } = props;
   const theme = useTheme();
   const classes = styles(props);
-  const gainOverVeqt = data[data.length - 1][props.account] - data[data.length - 1].VEQT;
+  const gainOverVeqt = data[data.length - 1][props.account] - data[data.length - 1][props.target];
   const startingDate = new Date(data[0].name).toDateString();
 
   return (
@@ -63,7 +63,8 @@ const InsightText = (props) => {
 
 const VEQTComparison = (props) => {
   const theme = useTheme();
-  const classes = styles(props);
+  const screen = useScreenSize();
+  const classes = styles({ ...props, screen });
   const userData = props.location.state;
   const [ data, setData ] = React.useState(null);
   const [ xAxisPoints, setXAxisPoints ] = React.useState(null);
@@ -108,8 +109,11 @@ const VEQTComparison = (props) => {
 
   return (
     <Grid container className={classes.root}>
-      <InsightText data={data} account={props.account} />
-
+      <InsightText
+        data={data}
+        account={props.account}
+        target={targetKey}
+      />
       <AreaGraph
         data={data}
         account={props.account}
