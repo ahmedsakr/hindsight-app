@@ -1,0 +1,132 @@
+import React from 'react';
+import {
+  Grid,
+  makeStyles,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
+import AreaGraph from '../../../charts/AreaGraph';
+import buildComparison from '../comparator';
+
+const styles = makeStyles(theme => ({
+  root: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: "center",
+    flex: 1
+  },
+  insightInfo: {
+    flexDirection: 'column',
+    width: "75%",
+    textAlign: "center",
+    margin: `${theme.spacing(2)}px 0px`
+  },
+  insightMetric: {
+    fontSize: 28,
+    fontWeight: 700,
+  },
+  insightDescription: {
+    fontSize: 16,
+  },
+}));
+
+
+
+const InsightText = (props) => {
+  const { data } = props;
+  const theme = useTheme();
+  const classes = styles(props);
+  const gainOverVeqt = data[data.length - 1][props.account] - data[data.length - 1].VEQT;
+  const startingDate = new Date(data[0].name).toDateString();
+
+  return (
+    <Grid container className={classes.insightInfo}>
+      <Typography
+        color="secondary"
+        className={classes.insightMetric}
+        style={{ color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main }}
+      >
+          {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2))} CAD `}
+          {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
+      </Typography>
+      <Typography
+        color="secondary"
+        className={classes.insightDescription}
+      >
+        Since {startingDate}, your {props.account} has returned
+        {` $${Math.abs(gainOverVeqt)} CAD`} {gainOverVeqt < 0 ? `less` : `more`} compared
+        to if your {props.account} was 100% Vanguard All-Equity ETF (VEQT)
+      </Typography>
+    </Grid>
+  );
+}
+
+const VEQTComparison = (props) => {
+  const theme = useTheme();
+  const classes = styles(props);
+  const userData = props.location.state;
+  const [ data, setData ] = React.useState(null);
+  const [ xAxisPoints, setXAxisPoints ] = React.useState(null);
+  const targetKey = 'VEQT';
+
+  React.useEffect(() => {
+    let account = userData.performance[props.account.toLowerCase()].results;
+    let target = userData.securities.history.veqt.results;
+
+    // Some dates come with the time; we remove it because we aren't interested
+    // in time for now.
+    account = account.map((day) => ({ ...day, date: day.date.split("T")[0]}));
+  
+    const graphData = buildComparison(
+      {
+        key: props.account,
+        data: account,
+      },
+      {
+        key: targetKey,
+        data: target
+      }
+    );
+    setData(graphData);
+
+    // Compute the new x-axis point
+    if (graphData.length < 6) {
+      // not enough data, use all points as x-axis
+      setXAxisPoints(graphData.map((day) => day.name));
+    } else {
+      // we have enough data to spread out the points
+      const jump = Math.floor(graphData.length / 5);
+      const points = graphData.filter((day, index) => index % jump === 0);
+      setXAxisPoints(points.map((day) => day.name));
+    }
+  
+  }, [ props.account, userData ]);
+
+  if (!data) {
+    return <></>;
+  }
+
+  return (
+    <Grid container className={classes.root}>
+      <InsightText data={data} account={props.account} />
+
+      <AreaGraph
+        data={data}
+        account={props.account}
+        xAxisPoints={xAxisPoints}
+        colors={[
+          {
+            id: props.account,
+            color: theme.palette.primary.main
+          },
+          {
+            id: targetKey,
+            color: "orange"
+          }
+        ]}
+      />
+    </Grid>
+  );
+}
+
+export default VEQTComparison;
