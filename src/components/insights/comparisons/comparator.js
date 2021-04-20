@@ -2,32 +2,100 @@
 const roundTo = (num, digits) => Math.round((num + Number.EPSILON) * (10^digits)) / (10^digits);
 
 /**
+ * Calculates number of days between the dates provided
+ */
+const daysBetween = (date1, date2) => {
+  const startDate = new Date(date1).getTime();
+  const endDate = new Date(date2).getTime();
+  return (endDate - startDate) / (1000 * 60 * 60 * 24);
+}
+
+/**
+ * Given a list of objects with dates, determine the rate at which the
+ * date is increasing from one object to the next.
+ */
+const determineDateRate = (data) => {
+  if (data.length === 1) {
+    return 1;
+  }
+
+  const daysDiff = daysBetween(data[0].date, data[data.length - 1].date);
+  return Math.ceil(daysDiff / data.length);
+}
+
+const alignDateRate = (account, target) => {
+  const accountRate = determineDateRate(account);
+  const targetRate = determineDateRate(target);
+
+  if (accountRate === targetRate) {
+    return [ account, target ];
+  }
+
+  /* Pulling quote history for securities from Wealthsimple for 5 years
+   * yields a list of quotes separated by 1 week. While the account performance
+   * list comes back as a list of performance for every day since account was opened.
+   * We need to speed up the account performance to match the security quotes.
+   * 
+   * For now, we will only handle the situation were targetRate = 7, accountRate = 1.
+   */
+  if (targetRate > accountRate) {
+    // find an appropriate starting point for the target
+    const startingIndex = target.findIndex((day) => daysBetween(account[0].date, day.date) >= 0 && daysBetween(account[0].date, day.date) <= 7);
+    let alignedTarget = target.slice(startingIndex, target.length);
+
+    let alignedAccount = account;
+
+    // need to adjust the start of the account list to match the target
+    if (alignedTarget[0].date !== alignedAccount[0].date) {
+      const adjustAccount = alignedAccount.findIndex((day) => day.date === alignedTarget[0].date);
+      alignedAccount = alignedAccount.slice(adjustAccount, alignedAccount.length);
+    }
+
+
+
+    // speed up account rate by transforming the account data from 1-day spaced to 7-days spaced.
+    alignedAccount = alignedAccount.filter((day) => {
+      return alignedTarget.findIndex((target) => target.date === day.date) >= 0
+    });
+
+    return [ alignedAccount, alignedTarget ];
+  }
+
+  // To be implemented: how do we align the dates properly?
+  return [ account, target ];
+}
+
+/**
  * Synchronize the two lists by guaranteeing that the start and end of both lists
  * have matching dates. This means trimming off some entries that aren't found in both.
  */
 const synchronizeData = (account, target) => {
 
   // make a copy of the arrays
-  let [ accountData, targetData ] = [ [ ...account], [ ...target ] ];
+  let [ accountData, targetData ] = alignDateRate(account, target);
 
-  // the user does not have 1 year of performance on this account. We must
-  // shrink the targetData list down to the appropriate size.
-  if (accountData[0].date !== targetData[0].date) {
-    const startingDate = targetData.findIndex((day) => day.date === accountData[0].date);
-    targetData = targetData.slice(startingDate, targetData.length);
+  const accountStart = new Date(accountData[0].date);
+  const targetStart = new Date(targetData[0].date);
+
+  if (accountStart > targetStart) {
+    const adjustTarget = targetData.findIndex((day) => day.date === accountData[0].date);
+    targetData = targetData.slice(adjustTarget, targetData.length);
+  } else if (targetStart > accountStart) {
+    const adjustAccount = accountData.findIndex((day) => day.date === targetData[0].date);
+    accountData = accountData.slice(adjustAccount, accountData.length);
   }
 
-  // The ending doesn't match. Need to find out whether to trim account list or target list.
-  if (accountData[accountData.length - 1].date !== targetData[targetData.length - 1].date) {
+  const accountEnd = new Date(accountData[accountData.length - 1].date);
+  const targetEnd = new Date(targetData[targetData.length - 1].date);
+
+  if (accountEnd > targetEnd) {
     const adjustAccount = accountData.findIndex((day) => day.date === targetData[targetData.length - 1].date);
+    accountData = accountData.slice(0, adjustAccount + 1);
+  } else if (targetEnd > accountEnd) {
     const adjustTarget = targetData.findIndex((day) => day.date === accountData[accountData.length - 1].date);
-
-    if (adjustAccount > -1) {
-      accountData = accountData.slice(0, adjustAccount + 1);
-    } else {
-      targetData = targetData.slice(0, adjustTarget + 1);
-    }
+    targetData = targetData.slice(0, adjustTarget + 1);
   }
+
 
   return { accountData, targetData };
 }

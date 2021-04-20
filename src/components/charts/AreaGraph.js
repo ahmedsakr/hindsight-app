@@ -63,6 +63,7 @@ const AreaGraph = (props) => {
 
                 return (
                   <Area
+                    key={id}
                     type="monotone"
                     dataKey={line.id}
                     stroke={line.color}

@@ -72,10 +72,10 @@ const VEQTComparison = (props) => {
 
   React.useEffect(() => {
     let account = userData.performance[props.account.toLowerCase()].results;
-    let target = userData.securities.history.veqt.results;
+    let target = userData.securities.history.veqt[props.dateRange === 'all' ? '5y': props.dateRange].results;
 
     // Some dates come with the time; we remove it because we aren't interested
-    // in time for now.
+    // in them for now.
     account = account.map((day) => ({ ...day, date: day.date.split("T")[0]}));
   
     const graphData = buildComparison(
@@ -101,7 +101,7 @@ const VEQTComparison = (props) => {
       setXAxisPoints(points.map((day) => day.name));
     }
   
-  }, [ props.account, userData ]);
+  }, [ props.account, props.dateRange, userData ]);
 
   if (!data) {
     return <></>;

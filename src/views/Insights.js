@@ -61,7 +61,7 @@ const styles = makeStyles(theme => ({
     backgroundColor: theme.palette.secondary.dark,
     margin: `${theme.spacing(4)}px 0px`
   },
-  accountSelection: {
+  dropdown: {
     border: `solid 2px ${theme.palette.secondary.dark}`,
     borderRadius: 6,
     padding: `0px ${theme.spacing(1.5)}px`,
@@ -70,8 +70,21 @@ const styles = makeStyles(theme => ({
   },
   selectIcon: {
     color: theme.palette.secondary.main
+  },
+  dropdowns: {
+    display: 'flex',
+    '& > *': {
+      margin: `0px ${theme.spacing(0.5)}px`
+    }
   }
 }));
+
+const allowedDateRanges = {
+  'tfsa': [ '1m', '3m', '1y', 'all'],
+  'personal': [ '1m', '3m', '1y', 'all' ],
+  'rrsp': [ '1m', '3m', '1y', 'all' ],
+  'crypto': [ '1m', '3m', '1y' ]
+}
 
 const Header = (props) => {
   const screen = useScreenSize();
@@ -98,28 +111,54 @@ const Header = (props) => {
             {props.location.state.user.first_name}
           </Typography>
         </Grid>
-        <Select
-            defaultValue={props.account}
-            onChange={(event) => props.setAccount(event.target.value)}
-            className={classes.accountSelection}
-            classes={{
-              icon: classes.selectIcon
-            }}
-          >
-            {
-              Object.keys(props.location.state.performance).map((account, id) => {
-                return (
-                  <MenuItem
-                    selected={true}
-                    key={id}
-                    value={account.toUpperCase()}
-                  >
-                    {account}
-                  </MenuItem>
-                );
-              })
-            }
-        </Select>
+        <Grid item className={classes.dropdowns}>
+          <Select
+              value={props.account}
+              onChange={(event) => props.setAccount(event.target.value)}
+              className={classes.dropdown}
+              classes={{
+                icon: classes.selectIcon
+              }}
+            >
+              {
+                Object.keys(props.location.state.performance).map((account, id) => {
+                  return (
+                    <MenuItem
+                      selected={true}
+                      key={id}
+                      value={account}
+                      style={{ textTransform: 'capitalize' }}
+                    >
+                      {account}
+                    </MenuItem>
+                  );
+                })
+              }
+          </Select>
+          <Select
+              value={props.dateRange}
+              onChange={(event) => props.setDateRange(event.target.value)}
+              className={classes.dropdown}
+              classes={{
+                icon: classes.selectIcon
+              }}
+            >
+              {
+                allowedDateRanges[props.account].map((date, id) => {
+                  return (
+                    <MenuItem
+                      selected={true}
+                      key={id}
+                      value={date}
+                    >
+                      {date}
+                    </MenuItem>
+                  );
+                })
+              }
+          </Select>
+        </Grid>
+
       </Grid>
       <Grid item className={classes.navigation}>
         <Button
@@ -150,20 +189,30 @@ const Insights = AuthenticatedView(props => {
 
   // we will start off on the first insight
   const [ insight, setInsight ] = React.useState(0);
-  const [ account, setAccount ] = React.useState(Object.keys(data.performance)[0].toUpperCase());
+  const [ account, setAccount ] = React.useState(Object.keys(data.performance)[0]);
+  const [ dateRange, setDateRange ] = React.useState('1y');
+
+  React.useEffect(() => {
+    if (account === 'crypto' && dateRange === 'all') {
+      setDateRange('1y');
+    }
+  }, [ account, dateRange ]);
 
   return (
     <Grid container className={classes.root}>
       <Header
         account={account}
+        dateRange={dateRange}
         setAccount={setAccount}
         setInsight={setInsight}
+        setDateRange={setDateRange}
         { ...props }
       />
       <Divider className={classes.divider} />
       <Insight
         index={insight}
-        account={account}
+        account={account.toUpperCase()}
+        dateRange={dateRange}
         {...props}/>
     </Grid>
   )
