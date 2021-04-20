@@ -100,14 +100,26 @@ const VEQTComparison = (props) => {
   const [ data, setData ] = React.useState(null);
 
   React.useEffect(() => {
-    const accountPerformance = userData.performance[props.account.toLowerCase()].results;
+    let accountPerformance = userData.performance[props.account.toLowerCase()].results;
     let veqtPerformance = userData.securities.history.veqt.results;
+    accountPerformance = accountPerformance.map((day) => ({ ...day, date: day.date.split("T")[0]}))
 
     // the user does not have 1 year of performance on this account. We must
     // shrink the veqtPerformance list down to the appropriate size.
-    if (accountPerformance.length < veqtPerformance.length) {
-      const delta = veqtPerformance.length - accountPerformance.length;
-      veqtPerformance = veqtPerformance.slice(delta, veqtPerformance.length);
+    if (accountPerformance[0].date !== veqtPerformance[0].date) {
+      const startingDate = veqtPerformance.findIndex((day) => day.date === accountPerformance[0].date);
+      veqtPerformance = veqtPerformance.slice(startingDate, veqtPerformance.length);
+    }
+
+    if (accountPerformance[accountPerformance.length - 1].date !== veqtPerformance[veqtPerformance.length - 1].date) {
+      const adjustAccount = accountPerformance.findIndex((day) => day.date === veqtPerformance[veqtPerformance.length - 1].date);
+      const adjustVeqt = veqtPerformance.findIndex((day) => day.date === accountPerformance[accountPerformance.length - 1].date);
+
+      if (adjustAccount > -1) {
+        accountPerformance = accountPerformance.slice(0, adjustAccount + 1);
+      } else {
+        veqtPerformance = veqtPerformance.slice(0, adjustVeqt + 1);
+      }
     }
 
     setData(buildData(props.account, accountPerformance, veqtPerformance));
