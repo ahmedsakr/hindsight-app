@@ -33,6 +33,7 @@ const styles = makeStyles(theme => ({
 const roundTo = (num, digits) => Math.round((num + Number.EPSILON) * (10^digits)) / (10^digits);
 
 const buildData = (account, performance, veqt) => {
+
   const veqtDayGain = (index) => {
     if (index === 0 || performance[index].net_deposits.amount < 0) {
       return 0;
@@ -99,7 +100,17 @@ const VEQTComparison = (props) => {
   const [ data, setData ] = React.useState(null);
 
   React.useEffect(() => {
-    setData(buildData(props.account, userData.performance[props.account.toLowerCase()].results, userData.securities.history.veqt.results))
+    const accountPerformance = userData.performance[props.account.toLowerCase()].results;
+    let veqtPerformance = userData.securities.history.veqt.results;
+
+    // the user does not have 1 year of performance on this account. We must
+    // shrink the veqtPerformance list down to the appropriate size.
+    if (accountPerformance.length < veqtPerformance.length) {
+      const delta = veqtPerformance.length - accountPerformance.length;
+      veqtPerformance = veqtPerformance.slice(delta, veqtPerformance.length);
+    }
+
+    setData(buildData(props.account, accountPerformance, veqtPerformance));
   }, [ props.account, userData ]);
 
   if (!data) {
