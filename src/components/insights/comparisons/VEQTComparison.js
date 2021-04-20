@@ -32,6 +32,37 @@ const styles = makeStyles(theme => ({
 // Rounds an number to the specified decimal points
 const roundTo = (num, digits) => Math.round((num + Number.EPSILON) * (10^digits)) / (10^digits);
 
+/**
+ * Synchronize the two lists by guaranteeing that the start and end of both lists
+ * have matching dates. This means trimming off some entries that aren't found in both.
+ */
+const synchronizeData = (account, veqt) => {
+
+  // make a copy of the arrays
+  let [ accountPerformance, veqtPerformance ] = [ [ ...account], [ ...veqt ] ];
+
+  // the user does not have 1 year of performance on this account. We must
+  // shrink the veqtPerformance list down to the appropriate size.
+  if (accountPerformance[0].date !== veqtPerformance[0].date) {
+    const startingDate = veqtPerformance.findIndex((day) => day.date === accountPerformance[0].date);
+    veqtPerformance = veqtPerformance.slice(startingDate, veqtPerformance.length);
+  }
+
+  // The ending doesn't match. Need to find out whether to trim account list or veqt list.
+  if (accountPerformance[accountPerformance.length - 1].date !== veqtPerformance[veqtPerformance.length - 1].date) {
+    const adjustAccount = accountPerformance.findIndex((day) => day.date === veqtPerformance[veqtPerformance.length - 1].date);
+    const adjustVeqt = veqtPerformance.findIndex((day) => day.date === accountPerformance[accountPerformance.length - 1].date);
+
+    if (adjustAccount > -1) {
+      accountPerformance = accountPerformance.slice(0, adjustAccount + 1);
+    } else {
+      veqtPerformance = veqtPerformance.slice(0, adjustVeqt + 1);
+    }
+  }
+
+  return { accountPerformance, veqtPerformance };
+}
+
 const buildData = (account, performance, veqt) => {
 
   const veqtDayGain = (index) => {
@@ -100,28 +131,17 @@ const VEQTComparison = (props) => {
   const [ data, setData ] = React.useState(null);
 
   React.useEffect(() => {
-    let accountPerformance = userData.performance[props.account.toLowerCase()].results;
-    let veqtPerformance = userData.securities.history.veqt.results;
-    accountPerformance = accountPerformance.map((day) => ({ ...day, date: day.date.split("T")[0]}))
+    let account = userData.performance[props.account.toLowerCase()].results;
+    let veqt = userData.securities.history.veqt.results;
 
-    // the user does not have 1 year of performance on this account. We must
-    // shrink the veqtPerformance list down to the appropriate size.
-    if (accountPerformance[0].date !== veqtPerformance[0].date) {
-      const startingDate = veqtPerformance.findIndex((day) => day.date === accountPerformance[0].date);
-      veqtPerformance = veqtPerformance.slice(startingDate, veqtPerformance.length);
-    }
+    // Some dates come with the time; we remove it because we aren't interested
+    // in time for now.
+    account = account.map((day) => ({ ...day, date: day.date.split("T")[0]}));
 
-    if (accountPerformance[accountPerformance.length - 1].date !== veqtPerformance[veqtPerformance.length - 1].date) {
-      const adjustAccount = accountPerformance.findIndex((day) => day.date === veqtPerformance[veqtPerformance.length - 1].date);
-      const adjustVeqt = veqtPerformance.findIndex((day) => day.date === accountPerformance[accountPerformance.length - 1].date);
-
-      if (adjustAccount > -1) {
-        accountPerformance = accountPerformance.slice(0, adjustAccount + 1);
-      } else {
-        veqtPerformance = veqtPerformance.slice(0, adjustVeqt + 1);
-      }
-    }
-
+    // Synchronize account and veqt lists by making sure the date ranges
+    // line up.
+    let { accountPerformance, veqtPerformance } = synchronizeData(account, veqt);
+  
     setData(buildData(props.account, accountPerformance, veqtPerformance));
   }, [ props.account, userData ]);
 
