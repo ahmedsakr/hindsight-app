@@ -19,7 +19,8 @@ const styles = makeStyles(theme => ({
   root: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: "center"
+    alignItems: "center",
+    padding: `0px ${theme.spacing(4)}px`,
   },
   header: {
     alignItems: "center",

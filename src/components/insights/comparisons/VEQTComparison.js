@@ -21,11 +21,15 @@ const styles = makeStyles(theme => ({
     margin: `${theme.spacing(2)}px 0px`
   },
   insightMetric: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 700,
   },
   insightDescription: {
     fontSize: 16,
+  },
+  chartContainer: {
+    minHeight: 200,
+    flexDirection: 'column',
   }
 }));
 
@@ -131,6 +135,7 @@ const VEQTComparison = (props) => {
   const userData = props.location.state;
 
   const [ data, setData ] = React.useState(null);
+  const [ xAxisPoints, setXAxisPoints ] = React.useState(null);
 
   React.useEffect(() => {
     let account = userData.performance[props.account.toLowerCase()].results;
@@ -144,7 +149,20 @@ const VEQTComparison = (props) => {
     // line up.
     let { accountPerformance, veqtPerformance } = synchronizeData(account, veqt);
   
-    setData(buildData(props.account, accountPerformance, veqtPerformance));
+    const graphData = buildData(props.account, accountPerformance, veqtPerformance);
+    setData(graphData);
+
+    // Compute the new x-axis point
+    if (graphData.length < 6) {
+      // not enough data, use all points as x-axis
+      setXAxisPoints(graphData.map((day) => day.name));
+    } else {
+      // we have enough data to spread out the points
+      const jump = Math.floor(graphData.length / 5);
+      const points = graphData.filter((day, index) => index % jump === 0);
+      setXAxisPoints(points.map((day) => day.name));
+    }
+  
   }, [ props.account, userData ]);
 
   if (!data) {
@@ -154,7 +172,7 @@ const VEQTComparison = (props) => {
   return (
     <Grid container className={classes.root}>
       <InsightText data={data} account={props.account} />
-      <Grid container style={{ minHeight: 200, flexDirection: 'column', position: 'relative' }}>
+      <Grid container className={classes.chartContainer}>
         <Grid item>
           <ResponsiveContainer width={"95%"} height={200}>
             <AreaChart data={data}>
@@ -168,10 +186,14 @@ const VEQTComparison = (props) => {
                   <stop offset="95%" stopColor="orange" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" ticks={xAxisPoints} />
               <YAxis />
-              <Tooltip />
+              <Tooltip itemStyle={{
+                  background: theme.palette.background.main,
+                  padding: theme.spacing(1),
+                }}
+              />
               <Legend />
               <Area type="monotone" dataKey={props.account} stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
               <Area type="monotone" dataKey="VEQT" stroke={'orange'} dot={false} fill="url(#VEQT)" fillOpacity={1}/>
