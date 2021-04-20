@@ -5,7 +5,7 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import { AreaChart, XAxis, YAxis, Tooltip, Legend, CartesianGrid, ResponsiveContainer, Area } from 'recharts';
+import AreaGraph from '../../charts/AreaGraph';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -27,10 +27,6 @@ const styles = makeStyles(theme => ({
   insightDescription: {
     fontSize: 16,
   },
-  chartContainer: {
-    minHeight: 200,
-    flexDirection: 'column',
-  }
 }));
 
 // Rounds an number to the specified decimal points
@@ -172,36 +168,22 @@ const VEQTComparison = (props) => {
   return (
     <Grid container className={classes.root}>
       <InsightText data={data} account={props.account} />
-      <Grid container className={classes.chartContainer}>
-        <Grid item>
-          <ResponsiveContainer width={"95%"} height={200}>
-            <AreaChart data={data}>
-              <defs>
-                <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="VEQT" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="orange" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="orange" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" ticks={xAxisPoints} />
-              <YAxis />
-              <Tooltip itemStyle={{
-                  background: theme.palette.background.main,
-                  padding: theme.spacing(1),
-                }}
-              />
-              <Legend />
-              <Area type="monotone" dataKey={props.account} stroke={theme.palette.primary.main} dot={false} fill="url(#colorUv)" fillOpacity={1}/>
-              <Area type="monotone" dataKey="VEQT" stroke={'orange'} dot={false} fill="url(#VEQT)" fillOpacity={1}/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </Grid>
 
-      </Grid>
+      <AreaGraph
+        data={data}
+        account={props.account}
+        xAxisPoints={xAxisPoints}
+        colors={[
+          {
+            id: props.account,
+            color: theme.palette.primary.main
+          },
+          {
+            id: "VEQT",
+            color: "orange"
+          }
+        ]}
+      />
     </Grid>
   );
 }
