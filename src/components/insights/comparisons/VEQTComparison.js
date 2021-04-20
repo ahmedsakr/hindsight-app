@@ -66,7 +66,9 @@ const synchronizeData = (account, veqt) => {
 const buildData = (account, performance, veqt) => {
 
   const veqtDayGain = (index) => {
-    if (index === 0 || performance[index].net_deposits.amount < 0) {
+    // we dont register any VEQT gains on the first day or if the user
+    // has no investments on this day (equity value === 0)
+    if (index === 0 || performance[index].equity_value.amount <= 0) {
       return 0;
     }
 
