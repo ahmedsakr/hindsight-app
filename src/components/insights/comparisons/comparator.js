@@ -100,6 +100,31 @@ const synchronizeData = (account, target) => {
   return { accountData, targetData };
 }
 
+/**
+ * Wealthsimple Trade data counts a deposit as part of the total net deposits
+ * when they have accepted it. However, that is usually not when the user can
+ * actually start trading with that money. This needs to be accounted for
+ * when computing the gain the person would have experienced with the target
+ * security.
+ * 
+ * We do this by providing an allowance of 2 days after wealthsimple has accepted
+ * their deposit. That means in this grace period, the target gains to do not include
+ * the deposit funds that are waiting to be cleared.
+ */
+const determineDeposits = (data, index, depositRecords) => {
+  const inProgressDeposits = depositRecords.filter((record) => {
+    const daysDiff = daysBetween(record.accepted_at.split("T")[0], data[index].date);
+    return daysDiff >= 0 && daysDiff <= 2
+  });
+
+  const allowance = inProgressDeposits.reduce((total, deposit) => {
+    total += (deposit.value.amount - deposit.instant_value.amount)
+    return total;
+  }, 0);
+
+  return data[index].net_deposits.amount - allowance;
+}
+
 /*
  * Generates a Recharts.js data list that compares the performance
  * of the user's accounts to a what-if scenario of the user having
@@ -119,7 +144,7 @@ export default function buildComparison(account, target) {
     }
 
     const dayPercentGain = (targetData[index].adjusted_price - targetData[index - 1].adjusted_price) / targetData[index - 1].adjusted_price;
-    return dayPercentGain * accountData[index].net_deposits.amount;
+    return dayPercentGain * determineDeposits(accountData, index, account.deposits);
   }
 
   let targetTotalGain = 0, accountTotalGain = 0;

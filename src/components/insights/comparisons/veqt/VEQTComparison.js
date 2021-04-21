@@ -65,12 +65,14 @@ const VEQTComparison = (props) => {
   const theme = useTheme();
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
-  const userData = props.location.state;
   const [ data, setData ] = React.useState(null);
   const [ xAxisPoints, setXAxisPoints ] = React.useState(null);
   const targetKey = 'VEQT';
 
   React.useEffect(() => {
+    const userData = props.location.state;
+    const accountId = userData.accounts[props.account.toLowerCase()];
+
     let account = userData.performance[props.account.toLowerCase()].results;
     let target = userData.securities.history.veqt[props.dateRange === 'all' ? '5y': props.dateRange].results;
 
@@ -82,6 +84,7 @@ const VEQTComparison = (props) => {
       {
         key: props.account,
         data: account,
+        deposits: userData.activities.filter((activity) => activity.account_id === accountId),
       },
       {
         key: targetKey,
@@ -101,7 +104,7 @@ const VEQTComparison = (props) => {
       setXAxisPoints(points.map((day) => day.name));
     }
   
-  }, [ props.account, props.dateRange, userData ]);
+  }, [ props.account, props.dateRange, props.location.state ]);
 
   if (!data) {
     return <></>;
