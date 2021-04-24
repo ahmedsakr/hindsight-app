@@ -113,8 +113,18 @@ const synchronizeData = (account, target) => {
  */
 const determineDeposits = (data, index, depositRecords) => {
   const inProgressDeposits = depositRecords.filter((record) => {
-    const daysDiff = daysBetween(record.accepted_at.split("T")[0], data[index].date);
-    return daysDiff >= 0 && daysDiff <= 2
+    if (record.object === 'deposit') {
+      const daysDiff = daysBetween(record.accepted_at.split("T")[0], data[index].date);
+      return daysDiff >= 0 && daysDiff <= 2;
+    } else if (record.object === 'institutional_transfer') {
+      // need to investigate institutional transfer state when it is in progress
+      // to find out when then amount gets applied to net deposits of the account.
+      // For now, we return false for all transfers, meaning we won't provide
+      // allowances for them.
+      return false;
+    }
+
+    return false;
   });
 
   const allowance = inProgressDeposits.reduce((total, deposit) => {
