@@ -53,7 +53,10 @@ const styles = makeStyles(theme => ({
     fontWeight: 700,
     fontSize: 20,
     padding: `${theme.spacing(0.25)}px ${theme.spacing(1)}px`,
-    margin: `0px ${theme.spacing(0.5)}px`
+    margin: `0px ${theme.spacing(0.5)}px`,
+  },
+  navigationDisabled: {
+    backgroundColor: theme.palette.secondary.dark,
   },
   divider: {
     height: 2,
@@ -85,6 +88,13 @@ const allowedDateRanges = {
   'rrsp': [ '1m', '3m', '1y', 'all' ],
   'crypto': [ '1m', '3m', '1y' ]
 }
+
+const accountNames = {
+  'tfsa': 'TFSA',
+  'personal': 'Personal',
+  'rrsp': 'RRSP',
+  'crypto': 'Crypto'
+};
 
 const Header = (props) => {
   const screen = useScreenSize();
@@ -127,9 +137,8 @@ const Header = (props) => {
                       selected={true}
                       key={id}
                       value={account}
-                      style={{ textTransform: 'capitalize' }}
                     >
-                      {account}
+                      {accountNames[account]}
                     </MenuItem>
                   );
                 })
@@ -165,6 +174,9 @@ const Header = (props) => {
           color="secondary"
           variant="outlined"
           className={classes.navigatingButton}
+          disabled={!props.navigation.current.back}
+          classes={{ disabled: classes.navigationDisabled }}
+          onClick={props.navigation.previousInsight}
         >
           {`<`}
         </Button>
@@ -172,6 +184,9 @@ const Header = (props) => {
           color="secondary"
           variant="outlined"
           className={classes.navigatingButton}
+          disabled={!props.navigation.current.forward}
+          classes={{ disabled: classes.navigationDisabled }}
+          onClick={props.navigation.nextInsight}
         >
           {`>`}
         </Button>
@@ -191,8 +206,13 @@ const Insights = AuthenticatedView(props => {
   const [ insight, setInsight ] = React.useState(0);
   const [ account, setAccount ] = React.useState(Object.keys(data.performance)[0]);
   const [ dateRange, setDateRange ] = React.useState('1y');
+  const [ navigation, setNavigation ] = React.useState({
+    back: false,
+    forward: supportedInsights.length - 1 > insight
+  });
 
   React.useEffect(() => {
+    // we don't allow 'all-time' for crypto yet.
     if (account === 'crypto' && dateRange === 'all') {
       setDateRange('1y');
     }
@@ -206,6 +226,23 @@ const Insights = AuthenticatedView(props => {
         setAccount={setAccount}
         setInsight={setInsight}
         setDateRange={setDateRange}
+        navigation={{
+          current: navigation,
+          nextInsight: () => {
+            setInsight(insight + 1);
+            setNavigation({
+              back: true,
+              forward: insight + 1 !== supportedInsights.length - 1
+            });
+          },
+          previousInsight: () => {
+            setInsight(insight - 1);
+            setNavigation({
+              back: insight - 1 !== 0,
+              forward: true
+            });  
+          }
+        }}
         { ...props }
       />
       <Divider className={classes.divider} />
