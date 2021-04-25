@@ -11,23 +11,34 @@ export const daysBetween = (date1, date2) => {
  * Creates a list of dates from the provided starting date up until today,
  * using the provided frequency as the delta between dates.
  */
-export const createDateInterval = (startingDate, frequency = 7) => {
-  const intervalStart = new Date(startingDate);
-  const daysDiff = Math.ceil(daysBetween(intervalStart, new Date()));
-  const intervalSize = Math.floor(daysDiff / frequency);
-  const startAdjust = daysDiff % frequency;
+export const createDateInterval = (startingDate, frequency = 'd') => {
+  let intervalStart = new Date(startingDate);
 
-  // Adjust the start of the interval so we can create a list of dates
-  // without running into fractional issues.
-  intervalStart.setDate(intervalStart.getDate() + startAdjust);
+  if (frequency === 'm' || frequency === '3m') {
+    // we start from the beginning of the month if we are creating a monthly or quarterly interval
+    intervalStart = new Date(intervalStart.getFullYear(), intervalStart.getMonth(), 1);
+  }
 
-  const interval = [];
-  const dateIterator = intervalStart;
-  for (let i = 0; i < intervalSize; i += 1) {
-    dateIterator.setDate(dateIterator.getDate() + frequency);
-    let newDate = new Date();
-    newDate.setTime(dateIterator.getTime());
-    interval.push(newDate);
+  const nextDate = (date) => {
+    if (frequency === 'w') {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDay() + 7);
+    } else if (frequency === 'm') {
+      return new Date(date.getFullYear(), date.getMonth() + 1);
+    } else if (frequency === '3m') {
+      return new Date(date.getFullYear(), date.getMonth() + 3);
+    } else {
+      // '1d' frequency or it was not recognized
+      return new Date(date.getFullYear(), date.getMonth(), date.getDay() + 1);
+    }
+  }
+
+  const interval = [intervalStart];
+  const now = new Date();
+  let appendDate = nextDate(intervalStart);
+
+  while (appendDate < now) {
+    interval.push(appendDate);
+    appendDate = nextDate(appendDate);
   }
 
   return interval;
