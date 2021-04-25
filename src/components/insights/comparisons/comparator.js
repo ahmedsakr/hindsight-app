@@ -1,14 +1,5 @@
-// Rounds an number to the specified decimal points
-const roundTo = (num, digits) => Math.round((num + Number.EPSILON) * (10^digits)) / (10^digits);
-
-/**
- * Calculates number of days between the dates provided
- */
-const daysBetween = (date1, date2) => {
-  const startDate = new Date(date1).getTime();
-  const endDate = new Date(date2).getTime();
-  return (endDate - startDate) / (1000 * 60 * 60 * 24);
-}
+import { roundTo } from "../../../helpers/arithmetic";
+import { daysBetween } from "../../../helpers/dates";
 
 /**
  * Given a list of objects with dates, determine the rate at which the
@@ -50,8 +41,6 @@ const alignDateRate = (account, target) => {
       const adjustAccount = alignedAccount.findIndex((day) => day.date === alignedTarget[0].date);
       alignedAccount = alignedAccount.slice(adjustAccount, alignedAccount.length);
     }
-
-
 
     // speed up account rate by transforming the account data from 1-day spaced to 7-days spaced.
     alignedAccount = alignedAccount.filter((day) => {

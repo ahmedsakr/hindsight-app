@@ -45,9 +45,7 @@ const AreaGraph = (props) => {
             <Legend />
             <defs>
               {
-                [...Array(props.colors.length)].map((value, id) => {
-                  const line = props.colors[id];
-
+                props.colors.map((line, id) => {
                   return (
                     <linearGradient key={id} id={line.id} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor={line.color} stopOpacity={0.8} />
@@ -58,16 +56,15 @@ const AreaGraph = (props) => {
               }
             </defs>
             {
-              [...Array(props.colors.length)].map((value, id) => {
-                const line = props.colors[id];
-
+              props.colors.map((line, id) => {
                 return (
                   <Area
                     key={id}
                     type="monotone"
                     dataKey={line.id}
                     stroke={line.color}
-                    dot={false} fill={`url(#${line.id})`}
+                    dot={false}
+                    fill={`url(#${line.id})`}
                     fillOpacity={1}
                   />
                 );

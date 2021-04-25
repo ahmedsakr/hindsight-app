@@ -56,7 +56,7 @@ const styles = makeStyles(theme => ({
     margin: `0px ${theme.spacing(0.5)}px`,
   },
   navigationDisabled: {
-    backgroundColor: theme.palette.secondary.dark,
+    backgroundColor: theme.palette.text.secondary,
   },
   divider: {
     height: 2,

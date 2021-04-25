@@ -37,7 +37,7 @@ const InsightText = (props) => {
   const theme = useTheme();
   const classes = styles(props);
   const gainOverVeqt = data[data.length - 1][props.account] - data[data.length - 1][props.target];
-  const startingDate = new Date(data[0].name).toDateString();
+  const startingDate = new Date(data[0].name).toISOString().split("T")[0];
 
   return (
     <Grid container className={classes.insightInfo}>
