@@ -33,10 +33,9 @@ const styles = makeStyles(theme => ({
 }));
 
 const InsightText = (props) => {
-  const { data } = props;
   const theme = useTheme();
   const classes = styles(props);
-  const startingDate = new Date(data[0].name).toISOString().split("T")[0];
+  const startingDate = props.startDate.toISOString().split("T")[0];
 
   return (
     <Grid container className={classes.insightInfo}>
@@ -63,15 +62,33 @@ const StackedActivities = (props) => {
   const classes = styles({ ...props, screen });
   const [ data, setData ] = React.useState(null);
   const [ activitiesCount, setActivitiesCount ] = React.useState(0);
+  const [ startDate, setStartDate ] = React.useState(null);
 
   React.useEffect(() => {
     const userData = props.location.state;
     const accountId = userData.accounts[props.account.toLowerCase()];
-    const activities = userData.activities.filter((activity) => activity.account_id === accountId);
+    let activities = userData.activities.filter((activity) => activity.account_id === accountId);
 
-    setData(createActivitiesHistogram(activities, 'm'));
+    const now = new Date();
+    let startDate = now;
+
+    if (props.dateRange === '1m') {
+      startDate.setDate(0);
+    } else if (props.dateRange === '3m') {
+      startDate.setMonth(startDate.getMonth() - 3);
+    } else if (props.dateRange === '1y') {
+      startDate.setFullYear(startDate.getFullYear() - 1);
+    } else if (props.dateRange === 'all') {
+      startDate = new Date(activities[activities.length - 1].created_at);
+    }
+
+    activities = activities.filter((activity) => new Date(activity.created_at) >= startDate);
+
+    setStartDate(startDate);
+    setData(createActivitiesHistogram(activities, startDate, props.dateRange));
     setActivitiesCount(activities.length);
-  }, [ props.location.state, props.account ]);
+
+  }, [ props.location.state, props.account, props.dateRange ]);
 
   if (!data) {
     return null;
@@ -80,7 +97,7 @@ const StackedActivities = (props) => {
   return (
     <Grid container className={classes.root}>
       <InsightText
-        data={data}
+        startDate={startDate}
         account={props.account}
         totalActivites={activitiesCount}
       />

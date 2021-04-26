@@ -14,21 +14,21 @@ export const daysBetween = (date1, date2) => {
 export const createDateInterval = (startingDate, frequency = 'd') => {
   let intervalStart = new Date(startingDate);
 
-  if (frequency === 'm' || frequency === '3m') {
+  if (frequency === '1m' || frequency === '3m') {
     // we start from the beginning of the month if we are creating a monthly or quarterly interval
     intervalStart = new Date(intervalStart.getFullYear(), intervalStart.getMonth(), 1);
   }
 
   const nextDate = (date) => {
-    if (frequency === 'w') {
-      return new Date(date.getFullYear(), date.getMonth(), date.getDay() + 7);
-    } else if (frequency === 'm') {
+    if (frequency === '1w') {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 7);
+    } else if (frequency === '1m') {
       return new Date(date.getFullYear(), date.getMonth() + 1);
     } else if (frequency === '3m') {
       return new Date(date.getFullYear(), date.getMonth() + 3);
     } else {
       // '1d' frequency or it was not recognized
-      return new Date(date.getFullYear(), date.getMonth(), date.getDay() + 1);
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
     }
   }
 
