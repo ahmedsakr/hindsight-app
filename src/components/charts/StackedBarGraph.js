@@ -27,6 +27,19 @@ const StackedBarGraph = (props) => {
   const theme = useTheme();
   const classes = styles(props);
 
+  const xAxisPoints = () => {
+    // Compute the new x-axis point
+    if (props.data.length < 6) {
+      // not enough data, use all points as x-axis
+      return props.data.map((day) => day.name);
+    } else {
+      // we have enough data to spread out the points
+      const jump = Math.floor(props.data.length / 3);
+      const points = props.data.filter((day, index) => index % jump === 0);
+      return points.map((day) => day.name);
+    }
+  }
+
   return (
     <Grid container className={classes.chartContainer}>
       <Grid item>
@@ -41,7 +54,7 @@ const StackedBarGraph = (props) => {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" />
+            <XAxis dataKey="name" ticks={xAxisPoints()} />
             <YAxis />
             <Tooltip itemStyle={{
               background: theme.palette.background.main,

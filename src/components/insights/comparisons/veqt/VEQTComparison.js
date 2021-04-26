@@ -66,7 +66,6 @@ const VEQTComparison = (props) => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
   const [ data, setData ] = React.useState(null);
-  const [ xAxisPoints, setXAxisPoints ] = React.useState(null);
   const targetKey = 'VEQT';
 
   React.useEffect(() => {
@@ -92,18 +91,6 @@ const VEQTComparison = (props) => {
       }
     );
     setData(graphData);
-
-    // Compute the new x-axis point
-    if (graphData.length < 6) {
-      // not enough data, use all points as x-axis
-      setXAxisPoints(graphData.map((day) => day.name));
-    } else {
-      // we have enough data to spread out the points
-      const jump = Math.floor(graphData.length / 5);
-      const points = graphData.filter((day, index) => index % jump === 0);
-      setXAxisPoints(points.map((day) => day.name));
-    }
-  
   }, [ props.account, props.dateRange, props.location.state ]);
 
   if (!data) {
@@ -120,7 +107,6 @@ const VEQTComparison = (props) => {
       <AreaGraph
         data={data}
         account={props.account}
-        xAxisPoints={xAxisPoints}
         colors={[
           {
             id: props.account,

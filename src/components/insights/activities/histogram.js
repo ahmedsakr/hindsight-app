@@ -8,6 +8,14 @@ const intervalToPeriod = (interval) => {
   }
 }
 
+const prettifyDate = (date, interval) => {
+  if (interval === '1m' || interval === '3m') {
+    return `Week of ${new Date(date).toLocaleString('default', { month: 'long', day: 'numeric' })}`;
+  } else if (interval === '1y' || interval === 'all') {
+    return new Date(date).toLocaleString('default', { month: 'long', year: 'numeric' });
+  }
+}
+
 export const createActivitiesHistogram = (activities, startDate, interval) => {
   const activityName = (activity) => {
     if (activity.object === 'order') {
@@ -18,7 +26,7 @@ export const createActivitiesHistogram = (activities, startDate, interval) => {
   }
 
   return groupActivitiesByPeriod(activities, startDate, intervalToPeriod(interval)).map((group) => {
-    const groupHistogram = { name: group.date, };
+    const groupHistogram = { name: prettifyDate(group.date, interval), };
 
     group.activities.forEach((activity) => {
       const name = activityName(activity);
