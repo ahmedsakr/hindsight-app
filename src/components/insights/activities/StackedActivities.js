@@ -86,7 +86,6 @@ const StackedActivities = (props) => {
 
     setData(createActivitiesHistogram(activities, startDate, props.dateRange));
     setActivitiesCount(activities.length);
-
   }, [ props.location.state, props.account, props.dateRange ]);
 
   if (!data) {
@@ -106,13 +105,13 @@ const StackedActivities = (props) => {
           { id: 'buy', color: '#2ab7ca' },
           { id: 'sell', color: '#fe4a49' },
           { id: 'deposit', color: '#fed766' },
-          { id: 'withdrawal', color: '#35a79c' },
+          { id: 'withdrawal', color: '#ff00d5' },
           { id: 'dividend', color: '#f37736' },
           { id: 'institutional_transfer', color: '#aaaaaa' },
           { id: 'internal_transfer', color: '#bbbbbb' },
           { id: 'refund', color: '#96ceb4' },
-          { id: 'referral_bonus', color: '#4b3832' },
-          { id: 'user_bonus', color: '#4b3832' },
+          { id: 'referral_bonus', color: '#747e77' },
+          { id: 'user_bonus', color: '#747e77' },
           { id: 'affiliate', color: '#4b3832' }
         ]}
       />

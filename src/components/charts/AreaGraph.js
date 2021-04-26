@@ -49,7 +49,7 @@ const AreaGraph = (props) => {
           <AreaChart data={props.data}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" ticks={xAxisPoints()} />
-            <YAxis />
+            <YAxis tickFormatter={props.yAxisFormatter} />
             <Tooltip itemStyle={{
               background: theme.palette.background.main,
               padding: theme.spacing(1),

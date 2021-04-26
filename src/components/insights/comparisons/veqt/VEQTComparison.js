@@ -46,7 +46,7 @@ const InsightText = (props) => {
         className={classes.insightMetric}
         style={{ color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main }}
       >
-          {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2))} CAD `}
+          {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2)).toLocaleString()} CAD `}
           {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
       </Typography>
       <Typography
@@ -117,6 +117,7 @@ const VEQTComparison = (props) => {
             color: "orange"
           }
         ]}
+        yAxisFormatter={(number) => `$${number.toLocaleString()}`}
       />
     </Grid>
   );
