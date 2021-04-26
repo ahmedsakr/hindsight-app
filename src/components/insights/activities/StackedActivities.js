@@ -35,7 +35,7 @@ const styles = makeStyles(theme => ({
 const InsightText = (props) => {
   const theme = useTheme();
   const classes = styles(props);
-  const startingDate = props.startDate.toISOString().split("T")[0];
+  const startingDate = props.data[0].name;
 
   return (
     <Grid container className={classes.insightInfo}>
@@ -51,7 +51,7 @@ const InsightText = (props) => {
         className={classes.insightDescription}
       >
         Your {props.account} has recorded a total of {props.totalActivites} activities since
-        {` ${startingDate}`}.
+        {` ${startingDate.startsWith('Week') ? 'the' : ''} ${startingDate}`}.
       </Typography>
     </Grid>
   );
@@ -98,7 +98,7 @@ const StackedActivities = (props) => {
   return (
     <Grid container className={classes.root}>
       <InsightText
-        startDate={startDate}
+        data={data}
         account={props.account}
         totalActivites={activitiesCount}
       />
