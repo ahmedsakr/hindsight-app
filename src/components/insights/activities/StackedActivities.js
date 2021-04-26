@@ -62,7 +62,6 @@ const StackedActivities = (props) => {
   const classes = styles({ ...props, screen });
   const [ data, setData ] = React.useState(null);
   const [ activitiesCount, setActivitiesCount ] = React.useState(0);
-  const [ startDate, setStartDate ] = React.useState(null);
 
   React.useEffect(() => {
     const userData = props.location.state;
@@ -85,7 +84,6 @@ const StackedActivities = (props) => {
     // Eliminate all activites that occur before the start date.
     activities = activities.filter((activity) => new Date(activity.created_at) >= startDate);
 
-    setStartDate(startDate);
     setData(createActivitiesHistogram(activities, startDate, props.dateRange));
     setActivitiesCount(activities.length);
 
