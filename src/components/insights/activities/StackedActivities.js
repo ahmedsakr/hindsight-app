@@ -82,6 +82,7 @@ const StackedActivities = (props) => {
       startDate = new Date(activities[activities.length - 1].created_at);
     }
 
+    // Eliminate all activites that occur before the start date.
     activities = activities.filter((activity) => new Date(activity.created_at) >= startDate);
 
     setStartDate(startDate);
@@ -104,50 +105,17 @@ const StackedActivities = (props) => {
       <StackedBarGraph
         data={data}
         colors={[
-          {
-            id: 'buy',
-            color: '#2ab7ca'
-          },
-          {
-            id: 'sell',
-            color: '#fe4a49',
-          },
-          {
-            id: 'deposit',
-            color: '#fed766'
-          },
-          {
-            id: 'withdrawal',
-            color: '#35a79c'
-          },
-          {
-            id: 'dividend',
-            color: '#f37736'
-          },
-          {
-            id: 'institutional_transfer',
-            color: '#aaaaaa'
-          },
-          {
-            id: 'internal_transfer',
-            color: '#bbbbbb'
-          },
-          {
-            id: 'refund',
-            color: '#96ceb4'
-          },
-          {
-            id: 'referral_bonus',
-            color: '#4b3832'
-          },
-          {
-            id: 'user_bonus',
-            color: '#4b3832'
-          },
-          {
-            id: 'affiliate',
-            color: '#4b3832'
-          }
+          { id: 'buy', color: '#2ab7ca' },
+          { id: 'sell', color: '#fe4a49' },
+          { id: 'deposit', color: '#fed766' },
+          { id: 'withdrawal', color: '#35a79c' },
+          { id: 'dividend', color: '#f37736' },
+          { id: 'institutional_transfer', color: '#aaaaaa' },
+          { id: 'internal_transfer', color: '#bbbbbb' },
+          { id: 'refund', color: '#96ceb4' },
+          { id: 'referral_bonus', color: '#4b3832' },
+          { id: 'user_bonus', color: '#4b3832' },
+          { id: 'affiliate', color: '#4b3832' }
         ]}
       />
     </Grid>
