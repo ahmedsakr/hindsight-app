@@ -72,7 +72,7 @@ const StackedActivities = (props) => {
     let startDate = now;
 
     if (props.dateRange === '1m') {
-      startDate.setDate(0);
+      startDate.setMonth(startDate.getMonth() - 1);
     } else if (props.dateRange === '3m') {
       startDate.setMonth(startDate.getMonth() - 3);
     } else if (props.dateRange === '1y') {
@@ -89,7 +89,7 @@ const StackedActivities = (props) => {
   }, [ props.location.state, props.account, props.dateRange ]);
 
   if (!data) {
-    return null;
+    return <></>;
   }
 
   return (
