@@ -155,6 +155,11 @@ const Form = (props) => {
           value={props.credentials.password.value}
           onChange={props.credentials.password.update}
           disabled={props.loginState === 'in-progress'}
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              props.login();
+            }
+          }}
         />
         <Button
           variant="contained"

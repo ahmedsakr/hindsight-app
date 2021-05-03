@@ -85,7 +85,6 @@ const synchronizeData = (account, target) => {
     targetData = targetData.slice(0, adjustTarget + 1);
   }
 
-
   return { accountData, targetData };
 }
 
@@ -135,22 +134,22 @@ export default function buildComparison(account, target) {
   // line up.
   const { accountData, targetData } = synchronizeData(account.data, target.data);
 
-  const targetDayGain = (index) => {
+  const targetGain = (index) => {
     // we dont register any target gains on the first day or if the user
     // has no investments on this day (equity value === 0)
     if (index === 0 || accountData[index].equity_value.amount <= 0) {
       return 0;
     }
 
-    const dayPercentGain = (targetData[index].adjusted_price - targetData[index - 1].adjusted_price) / targetData[index - 1].adjusted_price;
-    return dayPercentGain * determineDeposits(accountData, index, account.deposits);
+    const percentGain = (targetData[index].adjusted_price - targetData[index - 1].adjusted_price) / targetData[index - 1].adjusted_price;
+    return percentGain * determineDeposits(accountData, index, account.deposits);
   }
 
   let targetTotalGain = 0, accountTotalGain = 0;
   let startingPortfolioGain = accountData[0].value.amount - accountData[0].net_deposits.amount;
 
   return accountData.map((day, i) => {
-    targetTotalGain += targetDayGain(i);
+    targetTotalGain += targetGain(i);
     accountTotalGain = (day.value.amount - day.net_deposits.amount) - startingPortfolioGain;
     
     return {
