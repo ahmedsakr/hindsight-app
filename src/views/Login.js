@@ -156,7 +156,7 @@ const Form = (props) => {
           onChange={props.credentials.password.update}
           disabled={props.loginState === 'in-progress'}
           onKeyPress={(event) => {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && props.loginState === 'waiting') {
               props.login();
             }
           }}
@@ -165,7 +165,11 @@ const Form = (props) => {
           variant="contained"
           color="primary"
           className={classes.loginButton}
-          disabled={props.credentials.password.value === '' || props.credentials.email.value === ''}
+          disabled={
+            props.credentials.password.value === '' ||
+            props.credentials.email.value === '' ||
+            props.loginState !== 'waiting'
+          }
           classes={{
             disabled: classes.loginDisabled
           }}
