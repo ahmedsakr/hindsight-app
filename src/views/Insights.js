@@ -71,6 +71,10 @@ const styles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
     color: theme.palette.secondary.main
   },
+  dropdownOverride: {
+    backgroundColor: theme.palette.background.light,
+    color: theme.palette.secondary.main
+  },
   selectIcon: {
     color: theme.palette.secondary.main
   },
@@ -126,6 +130,11 @@ const Header = (props) => {
               value={props.account}
               onChange={(event) => props.setAccount(event.target.value)}
               className={classes.dropdown}
+              MenuProps={{
+                classes: {
+                  paper: classes.dropdownOverride
+                }
+              }}
               classes={{
                 icon: classes.selectIcon
               }}
@@ -148,8 +157,13 @@ const Header = (props) => {
               value={props.dateRange}
               onChange={(event) => props.setDateRange(event.target.value)}
               className={classes.dropdown}
+              MenuProps={{
+                classes: {
+                  paper: classes.dropdownOverride
+                }
+              }}
               classes={{
-                icon: classes.selectIcon
+                icon: classes.selectIcon,
               }}
             >
               {
