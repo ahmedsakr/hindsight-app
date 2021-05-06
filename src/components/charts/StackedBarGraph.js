@@ -11,9 +11,10 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  Tooltip
 } from 'recharts';
+
 
 const styles = makeStyles(theme => ({
   chartContainer: {
@@ -56,10 +57,15 @@ const StackedBarGraph = (props) => {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" ticks={xAxisPoints()} />
             <YAxis />
-            <Tooltip itemStyle={{
-              background: theme.palette.background.main,
-              padding: theme.spacing(1),
-            }}
+            <Tooltip
+              labelStyle={{
+                color: theme.palette.secondary.main,
+                marginBottom: theme.spacing(1)
+              }}
+              contentStyle={{
+                background: theme.palette.background.main,
+                padding: theme.spacing(1),
+              }}
             />
             {
               props.colors.map((line, id) =>

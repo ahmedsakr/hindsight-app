@@ -50,10 +50,15 @@ const AreaGraph = (props) => {
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis dataKey="name" ticks={xAxisPoints()} />
             <YAxis tickFormatter={props.yAxisFormatter} />
-            <Tooltip itemStyle={{
-              background: theme.palette.background.main,
-              padding: theme.spacing(1),
-            }}
+            <Tooltip
+              labelStyle={{
+                color: 'white',
+                marginBottom: theme.spacing(1)
+              }}
+              contentStyle={{
+                background: theme.palette.background.main,
+                padding: theme.spacing(1),
+              }}
             />
             <Legend />
             <defs>
