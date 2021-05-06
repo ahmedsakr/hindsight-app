@@ -92,7 +92,7 @@ const CursorFocusableOtpField = (props) => {
       value={props.otp.current[props.idx]}
       onChange={(event) => props.otp.update(props.idx, event.target.value)}
       disabled={props.login === 'in-progress'}
-      onMouseDown={() => {
+      onFocus={() => {
         if (props.otpFocus.state.enabled && props.otpFocus.state.index !== props.idx) {
           props.otpFocus.disable();
         }
@@ -236,7 +236,7 @@ const OTP = AuthenticatedView(props => {
           current: otp,
           update: (index, value) => {
 
-            if (value === '' || otp[index] === '') {
+            if (value.length <= 1 || otp[index] === '') {
 
               if (value.length === 6) {
                 setOtp(value.split(''));
