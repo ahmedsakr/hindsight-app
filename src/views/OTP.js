@@ -13,6 +13,7 @@ import { Redirect } from 'react-router';
 import { isElectron, useScreenSize } from '../helpers/screen';
 import { isMobile } from 'react-device-detect';
 import AuthenticatedView from '../helpers/authentication';
+import { useOTP } from '../components/login/otp';
 
 const styles = makeStyles(theme => ({
   root: props => ({
@@ -79,10 +80,10 @@ const CursorFocusableOtpField = (props) => {
   const ref = React.useRef();
 
   React.useEffect(() => {
-    if (props.otpFocus.state.enabled && props.otpFocus.state.index === props.idx) {
+    if (props.otp.focus.state.enabled && props.otp.focus.state.index === props.idx) {
       ref.current.focus();
     }
-  }, [ props.otpFocus, props.idx ]);
+  }, [ props.otp.focus, props.idx ]);
 
   return (
     <TextField
@@ -91,10 +92,10 @@ const CursorFocusableOtpField = (props) => {
       type={isMobile ? 'number' : 'text' }
       value={props.otp.current[props.idx]}
       onChange={(event) => props.otp.update(props.idx, event.target.value)}
-      disabled={props.login === 'in-progress'}
+      disabled={props.login !== 'waiting'}
       onFocus={() => {
-        if (props.otpFocus.state.enabled && props.otpFocus.state.index !== props.idx) {
-          props.otpFocus.disable();
+        if (props.otp.focus.state.enabled && props.otp.focus.state.index !== props.idx) {
+          props.otp.focus.disable();
         }
       }}
       InputProps={{
@@ -166,45 +167,58 @@ const Content = (props) => {
   )
 }
 
-
 const OTP = AuthenticatedView(props => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
-  const [ otp, setOtp ] = React.useState(['', '', '', '', '', '']);
-  const [ otpFocus, setOtpFocus ] = React.useState({ enabled: true, index: 0 });
+
   const [ login, setLogin ] = React.useState('waiting');
-  const [ tokens, setTokens ] = React.useState({});
+  const [ tokens, setTokens ] = React.useState(null);
   const [ cancel, setCancel ] = React.useState(false);
 
+  // Hook for managing OTP input from user and currently focused box
+  const otp = useOTP();
+
   React.useEffect(() => {
-    const otpString = otp.join('');
+    const otpString = otp.current.join('');
 
-    if (otpString.length === 6) {
-      const credentials = props.location.state;
+    // Dispatch a login attempt with OTP to finalize the login process
+    // A successful login will return the tokens we need to proceed to the
+    // loading page.
+    const attemptLogin = async () => {
       setLogin('in-progress');
-
-      sendLogin(credentials.email, credentials.password, otpString)
-      .then((result) => result.json())
-      .then((tokens) => {
-        if (!tokens.access) {
+      const credentials = props.location.state;
+  
+      try {
+        const result = await sendLogin(credentials.email, credentials.password, otpString);
+        const body = await result.json();
+  
+        // our login attempt did not succeed
+        if (!body.access || !body.refresh || !body.expires) {
           throw new Error("login failed")
         }
-
-        setTokens(tokens);
+  
         setLogin('valid');
-      })
-      .catch(() => {
+        // Wait a second before setting the tokens and moving to loading page
+        // this is to allow the user to visually understand the login was successful
+        // with the green borders
+        setTimeout(() => setTokens(body), 1000);
+      } catch {
         // Set invalid login attempt
         setLogin('invalid');
-      })
-      .then(() => {
         // Revert back to waiting state after 1 second
         setTimeout(() => {
-          setLogin('waiting')
+          otp.reset();
+          setLogin('waiting');
         }, 1000);
-      })
+      }
     }
-  }, [ otp, props.location.state ]);
+
+    // We will only attempt a login when the user has provided a full
+    // OTP and no other login is in progress
+    if (otpString.length === 6 && login === 'waiting') {
+      attemptLogin();
+    }
+  }, [ otp, login, props.location.state ]);
 
   // Redirect back to login page if user has cancelled.
   if (cancel) {
@@ -218,7 +232,7 @@ const OTP = AuthenticatedView(props => {
   }
 
   // Redirect to insights page on successful login
-  if (login === 'waiting' && Object.keys(tokens).length > 0) {
+  if (login === 'valid' && tokens !== null) {
     return (
       <Redirect to={{
         pathname: "/loading",
@@ -232,34 +246,7 @@ const OTP = AuthenticatedView(props => {
     <Grid container className={classes.root}>
       <SideLogo />
       <Content
-        otp={{
-          current: otp,
-          update: (index, value) => {
-
-            if (value.length <= 1 || otp[index] === '') {
-
-              if (value.length === 6) {
-                setOtp(value.split(''));
-                setOtpFocus({ ...otpFocus, index: 5 });
-              } else if (value === '' || value.match(/[0-9]/)) {
-                const copy = [...otp];
-                copy[index] = value;
-
-                setOtp(copy);
-
-                if (otpFocus.enabled) {
-                  setOtpFocus({ ...otpFocus, index: otpFocus.index + 1 });
-                }
-              }
-            }
-          }
-        }}
-
-        otpFocus={{
-          state: otpFocus,
-          disable: () => setOtpFocus({ ...otpFocus, enabled: false })
-        }}
-
+        otp={otp}
         login={login}
         cancel={() => setCancel(true)}
       />
