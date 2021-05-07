@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   makeStyles,
   Grid,
@@ -185,9 +185,9 @@ const Form = (props) => {
 const Login = (props) => {
   const classes = styles(props);
 
-  const [ email, setEmail ] = React.useState('');
-  const [ password, setPassword ] = React.useState('');
-  const [ loginState, setLoginState ] = React.useState('waiting');
+  const [ email, setEmail ] = useState('');
+  const [ password, setPassword ] = useState('');
+  const [ loginState, setLoginState ] = useState('waiting');
 
   // trivial redirect to OTP view until the backend service
   // is hooked up to the frontend

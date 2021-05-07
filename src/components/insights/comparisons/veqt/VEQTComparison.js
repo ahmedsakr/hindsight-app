@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useEffect,
+  useState
+} from 'react';
 import {
   Grid,
   makeStyles,
@@ -8,6 +11,7 @@ import {
 import AreaGraph from '../../../charts/AreaGraph';
 import buildComparison from '../comparator';
 import { useScreenSize } from '../../../../helpers/screen';
+import { roundTo } from '../../../../helpers/arithmetic';
 
 const styles = makeStyles(theme => ({
   root: props => ({
@@ -37,6 +41,7 @@ const InsightText = (props) => {
   const theme = useTheme();
   const classes = styles(props);
   const gainOverVeqt = data[data.length - 1][props.account] - data[data.length - 1][props.target];
+  const roundedGain = roundTo(Math.abs(gainOverVeqt), 2).toLocaleString();
   const startingDate = new Date(data[0].name).toISOString().split("T")[0];
 
   return (
@@ -46,15 +51,14 @@ const InsightText = (props) => {
         className={classes.insightMetric}
         style={{ color: gainOverVeqt < 0 ? 'red' : theme.palette.primary.main }}
       >
-          {` $${parseFloat(Math.abs(gainOverVeqt).toFixed(2)).toLocaleString()} CAD `}
-          {gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `}
+          {(` $${roundedGain} CAD `) + (gainOverVeqt < 0 ? ` ↓ ` : ` ↑ `)}
       </Typography>
       <Typography
         color="secondary"
         className={classes.insightDescription}
       >
         Since {startingDate}, your {props.account} has returned
-        {` $${Math.abs(gainOverVeqt)} CAD`} {gainOverVeqt < 0 ? `less` : `more`} compared
+        {` $${roundedGain} CAD`} {gainOverVeqt < 0 ? `less` : `more`} compared
         to if your {props.account} was 100% Vanguard All-Equity ETF (VEQT)
       </Typography>
     </Grid>
@@ -65,10 +69,10 @@ const VEQTComparison = (props) => {
   const theme = useTheme();
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
-  const [ data, setData ] = React.useState(null);
+  const [ data, setData ] = useState(null);
   const targetKey = 'VEQT';
 
-  React.useEffect(() => {
+  useEffect(() => {
     const userData = props.location.state;
     const accountId = userData.accounts[props.account.toLowerCase()];
 

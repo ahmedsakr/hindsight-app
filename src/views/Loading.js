@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useEffect,
+  useState
+} from 'react';
 import {
   makeStyles,
   Grid,
@@ -42,10 +45,10 @@ const styles = makeStyles(theme => ({
 const Loading = AuthenticatedView(props => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
-  const [ accountData, setAccountData ] = React.useState(null);
+  const [ accountData, setAccountData ] = useState(null);
 
   // Fetch all data we require to generate insights from Wealthsimple Trade servers
-  React.useEffect(() => {
+  useEffect(() => {
     fetchInsightsData(props.location.state)
     .then((response) => response.json())
     .then(setAccountData)

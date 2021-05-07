@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 import {
   makeStyles,
   Grid,
@@ -217,15 +220,15 @@ const Insights = AuthenticatedView(props => {
   const data = props.location.state;
 
   // we will start off on the first insight
-  const [ insight, setInsight ] = React.useState(0);
-  const [ account, setAccount ] = React.useState(Object.keys(data.performance)[0]);
-  const [ dateRange, setDateRange ] = React.useState('1y');
-  const [ navigation, setNavigation ] = React.useState({
+  const [ insight, setInsight ] = useState(0);
+  const [ account, setAccount ] = useState(Object.keys(data.performance)[0]);
+  const [ dateRange, setDateRange ] = useState('1y');
+  const [ navigation, setNavigation ] = useState({
     back: false,
     forward: supportedInsights.length - 1 > insight
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     // we don't allow 'all-time' for crypto yet.
     if (account === 'crypto' && dateRange === 'all') {
       setDateRange('1y');

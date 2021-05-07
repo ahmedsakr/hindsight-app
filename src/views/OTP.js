@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 import {
   makeStyles,
   Grid,
@@ -59,9 +62,9 @@ const styles = makeStyles(theme => ({
  */
 const useOTPBoxBorder = (login) => {
   const theme = useTheme();
-  const [ border, setBorder ] = React.useState(theme.palette.secondary.dark);
+  const [ border, setBorder ] = useState(theme.palette.secondary.dark);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (login === 'invalid') {
       setBorder('red');
     } else if (login === 'valid') {
@@ -79,7 +82,7 @@ const CursorFocusableOtpField = (props) => {
   const classes = styles({ ...props, screen });
   const ref = React.useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (props.otp.focus.state.enabled && props.otp.focus.state.index === props.idx) {
       ref.current.focus();
     }
@@ -171,14 +174,14 @@ const OTP = AuthenticatedView(props => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
 
-  const [ login, setLogin ] = React.useState('waiting');
-  const [ tokens, setTokens ] = React.useState(null);
-  const [ cancel, setCancel ] = React.useState(false);
+  const [ login, setLogin ] = useState('waiting');
+  const [ tokens, setTokens ] = useState(null);
+  const [ cancel, setCancel ] = useState(false);
 
   // Hook for managing OTP input from user and currently focused box
   const otp = useOTP();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const otpString = otp.current.join('');
 
     // Dispatch a login attempt with OTP to finalize the login process

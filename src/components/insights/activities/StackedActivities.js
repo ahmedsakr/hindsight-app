@@ -1,4 +1,7 @@
-import React from 'react';
+import React, {
+  useEffect,
+  useState,
+} from 'react';
 import {
   makeStyles,
   Grid,
@@ -60,10 +63,10 @@ const InsightText = (props) => {
 const StackedActivities = (props) => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
-  const [ data, setData ] = React.useState(null);
-  const [ activitiesCount, setActivitiesCount ] = React.useState(0);
+  const [ data, setData ] = useState(null);
+  const [ activitiesCount, setActivitiesCount ] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const userData = props.location.state;
     const accountId = userData.accounts[props.account.toLowerCase()];
     let activities = userData.activities.filter((activity) => activity.account_id === accountId);
