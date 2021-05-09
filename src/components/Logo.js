@@ -4,7 +4,7 @@ import {
   Typography,
   Grid
 } from '@material-ui/core';
-import PNGLogo from '../assets/tradingreflections-logo-png.png';
+import PNGLogo from '../assets/hindsight-logo.png';
 import { isElectron } from '../helpers/screen';
 
 const styles = makeStyles(theme => ({
