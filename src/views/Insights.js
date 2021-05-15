@@ -8,13 +8,12 @@ import {
   Typography,
   Button,
   Divider,
-  Select,
-  MenuItem,
 } from '@material-ui/core';
 import AuthenticatedView from '../helpers/authentication';
 import { SideLogo } from '../components/Logo';
 import { supportedInsights } from '../components/insights/supported';
 import { useScreenSize } from '../helpers/screen';
+import Dropdown from '../stories/input/Dropdown';
 
 const styles = makeStyles(theme => ({
   root: {
@@ -129,62 +128,17 @@ const Header = (props) => {
           </Typography>
         </Grid>
         <Grid item className={classes.dropdowns}>
-          <Select
-              value={props.account}
-              onChange={(event) => props.setAccount(event.target.value)}
-              className={classes.dropdown}
-              MenuProps={{
-                classes: {
-                  paper: classes.dropdownOverride
-                }
-              }}
-              classes={{
-                icon: classes.selectIcon
-              }}
-            >
-              {
-                Object.keys(props.location.state.performance).map((account, id) => {
-                  return (
-                    <MenuItem
-                      selected={true}
-                      key={id}
-                      value={account}
-                    >
-                      {accountNames[account]}
-                    </MenuItem>
-                  );
-                })
-              }
-          </Select>
-          <Select
-              value={props.dateRange}
-              onChange={(event) => props.setDateRange(event.target.value)}
-              className={classes.dropdown}
-              MenuProps={{
-                classes: {
-                  paper: classes.dropdownOverride
-                }
-              }}
-              classes={{
-                icon: classes.selectIcon,
-              }}
-            >
-              {
-                allowedDateRanges[props.account].map((date, id) => {
-                  return (
-                    <MenuItem
-                      selected={true}
-                      key={id}
-                      value={date}
-                    >
-                      {date}
-                    </MenuItem>
-                  );
-                })
-              }
-          </Select>
+          <Dropdown
+            options={Object.keys(props.location.state.performance).map((account) => accountNames[account])}
+            selected={accountNames[props.account.toLowerCase()]}
+            onSelect={(event) => props.setAccount(event.target.value)}
+          />
+          <Dropdown
+            options={allowedDateRanges[props.account.toLowerCase()]}
+            selected={props.dateRange}
+            onSelect={(event) => props.setDateRange(event.target.value)}
+          />
         </Grid>
-
       </Grid>
       <Grid item className={classes.navigation}>
         <Button
