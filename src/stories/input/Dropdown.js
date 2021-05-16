@@ -40,6 +40,7 @@ const Dropdown = ({ options, selected, onSelect, ...props }) => {
       classes={{
         icon: classes.selectIcon,
       }}
+      { ...props }
     >
       {options?.map((option, id) => {
         return (
@@ -66,11 +67,17 @@ Dropdown.propTypes = {
    * The option that is chosen.
    */
   selected: PropTypes.string,
+
+  /**
+   * Callback function triggered when the user chooses a new option.
+   */
+  onSelect: PropTypes.func,
 }
 
 Dropdown.defaultProps = {
   options: [ "empty" ],
-  selected: "empty"
+  selected: "empty",
+  onSelect: undefined,
 }
 
 export default Dropdown;
