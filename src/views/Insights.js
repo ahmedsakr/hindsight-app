@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useState,
 } from 'react';
@@ -105,6 +106,8 @@ const accountNames = {
 const Header = (props) => {
   const screen = useScreenSize();
   const classes = styles({ ...props, screen });
+  const displayAccounts = Object.keys(props.location.state.performance).map((account) => accountNames[account]);
+
   return (
     <Grid container className={classes.header}>
       <Grid item style={{ flex: 1, }}>
@@ -129,8 +132,8 @@ const Header = (props) => {
         </Grid>
         <Grid item className={classes.dropdowns}>
           <Dropdown
-            options={Object.keys(props.location.state.performance).map((account) => accountNames[account])}
-            selected={accountNames[props.account.toLowerCase()]}
+            options={displayAccounts}
+            selected={props.account}
             onSelect={(event) => props.setAccount(event.target.value)}
           />
           <Dropdown
@@ -147,17 +150,17 @@ const Header = (props) => {
           className={classes.navigatingButton}
           disabled={!props.navigation.current.back}
           classes={{ disabled: classes.navigationDisabled }}
-          onClick={props.navigation.previousInsight}
+          onClick={props.navigation.previous}
         >
           {`<`}
         </Button>
-        <Button
+        <Button 
           color="secondary"
           variant="outlined"
           className={classes.navigatingButton}
           disabled={!props.navigation.current.forward}
           classes={{ disabled: classes.navigationDisabled }}
-          onClick={props.navigation.nextInsight}
+          onClick={props.navigation.next}
         >
           {`>`}
         </Button>
@@ -167,24 +170,56 @@ const Header = (props) => {
 }
 
 // Render the appropriate insight based on the index we're at.
-const Insight = (props) => React.cloneElement(supportedInsights[props.index], props)
+const Insight = (props) => React.cloneElement(supportedInsights[props.index], props);
+
+/**
+ * useNavigation hook controls the state of selected insight and
+ * restricts whether the user can go back or next in the list
+ * of insights.
+ */
+const useNavigation = () => {
+  const [ navigation, setNavigation ] = useState({
+    index: 0,
+    back: false,
+    forward: supportedInsights.length > 1
+  });
+
+  const next = useCallback(
+    () => setNavigation({
+      index: navigation.index + 1,
+      back: true,
+      forward: navigation.index + 1 !== supportedInsights.length - 1
+    }),
+    [navigation.index]
+  );
+
+  const previous = useCallback(
+    () => setNavigation({
+      index: navigation.index - 1,
+      back: navigation.index - 1 !== 0,
+      forward: true
+    }),
+    [navigation.index]
+  );
+
+  return {
+    current: navigation,
+    next,
+    previous
+  };
+}
 
 const Insights = AuthenticatedView(props => {
   const classes = styles(props);
   const data = props.location.state;
 
-  // we will start off on the first insight
-  const [ insight, setInsight ] = useState(0);
-  const [ account, setAccount ] = useState(Object.keys(data.performance)[0]);
+  const [ account, setAccount ] = useState(accountNames[Object.keys(data.performance)[0]]);
   const [ dateRange, setDateRange ] = useState('1y');
-  const [ navigation, setNavigation ] = useState({
-    back: false,
-    forward: supportedInsights.length - 1 > insight
-  });
+  const navigation = useNavigation();
 
   useEffect(() => {
     // we don't allow 'all-time' for crypto yet.
-    if (account === 'crypto' && dateRange === 'all') {
+    if (account === 'Crypto' && dateRange === 'all') {
       setDateRange('1y');
     }
   }, [ account, dateRange ]);
@@ -195,30 +230,13 @@ const Insights = AuthenticatedView(props => {
         account={account}
         dateRange={dateRange}
         setAccount={setAccount}
-        setInsight={setInsight}
         setDateRange={setDateRange}
-        navigation={{
-          current: navigation,
-          nextInsight: () => {
-            setInsight(insight + 1);
-            setNavigation({
-              back: true,
-              forward: insight + 1 !== supportedInsights.length - 1
-            });
-          },
-          previousInsight: () => {
-            setInsight(insight - 1);
-            setNavigation({
-              back: insight - 1 !== 0,
-              forward: true
-            });  
-          }
-        }}
+        navigation={navigation}
         { ...props }
       />
       <Divider className={classes.divider} />
       <Insight
-        index={insight}
+        index={navigation.current.index}
         account={account.toUpperCase()}
         dateRange={dateRange}
         {...props}/>
